@@ -6,7 +6,8 @@ public class Observation {
 	private int index;
 	private double value;
 	private double prediction;
-	private double error;
+	private double error = 0;
+	private double[] prevPValues = null;
 	
 	// Constructor
 	public Observation(int index, double value) {
@@ -31,6 +32,9 @@ public class Observation {
 	public void setError() {
 		this.error = value-prediction;
 	}
+	public void setError(double error) {
+		this.error = error;
+	}
 
 	public int getIndex() {
 		return index;
@@ -39,5 +43,18 @@ public class Observation {
 	public double getValue() {
 		return value;
 	}
+
+
+	public double[] getPrevPValues() {
+		return prevPValues;
+	}
+
+
+	public void setPrevPValues(double[] prevPValues) {
+		this.prevPValues = prevPValues;
+	}
+	
+	
+	
 
 }
