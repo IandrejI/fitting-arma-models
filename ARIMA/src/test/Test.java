@@ -3,6 +3,7 @@ package test;
 import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 
 import arima.AR;
+import arima.ARMA;
 import timeSeries.Observation;
 
 public class Test {
@@ -31,17 +32,23 @@ public class Test {
 		Observation U = new Observation(20, 83.67);
 
 		Observation[] allObservations = { A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U };
+	
+		AR.setPrevPValues(allObservations, 2);
+		AR.setupOLS(allObservations, 2);
+		ARMA.setPrevQErrors(allObservations, 2);
 		
-		//AR.setPrevPValues(allObservations, 2);
-		double[] data = AR.setupOLS(allObservations, 5);
-		
-		for(int i = 0; i < data.length; i++) {System.out.println(data[i]); }
-		
-		/*
+	
 		for (int i = 0; i < allObservations.length; i++) {
 			System.out.println(allObservations[i].getError());
 		}
-		*/
-
+		
+		for(Observation obs : allObservations) {
+			if(obs.getPrevQErrors()!= null) {
+				for(int i = 0; i < obs.getPrevQErrors().length; i++) {
+					System.out.print(obs.getPrevQErrors()[i] + " ");
+				}
+			}
+			System.out.print("\n");
+		}
 	}
 }
