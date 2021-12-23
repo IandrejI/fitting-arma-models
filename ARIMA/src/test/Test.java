@@ -1,5 +1,7 @@
 package test;
 
+import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
+
 import arima.AR;
 import timeSeries.Observation;
 
@@ -29,28 +31,17 @@ public class Test {
 		Observation U = new Observation(20, 83.67);
 
 		Observation[] allObservations = { A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U };
-
-		// double[] data = AR.OLSDataArray(allObservations, 2);
-		AR.errorSetupOLS(allObservations, 5);
-		AR.setPrevPValues(allObservations, 5);
-
+		
+		//AR.setPrevPValues(allObservations, 2);
+		double[] data = AR.setupOLS(allObservations, 5);
+		
+		for(int i = 0; i < data.length; i++) {System.out.println(data[i]); }
+		
 		/*
-		 * for(int i = 0; i < data.length; i++) { System.out.println(data[i]); }
-		 */
-
 		for (int i = 0; i < allObservations.length; i++) {
 			System.out.println(allObservations[i].getError());
 		}
-		for (Observation obs : allObservations) {
-			System.out.print(obs.getIndex()+ ": ");
-			for (int j = 0; j < 5; j++) {
-				if (obs.getPrevPValues() != null) {
-					System.out.print(obs.getPrevPValues()[j]+" ");
-				}
-			}
-			System.out.print("\n");
-
-		}
+		*/
 
 	}
 }

@@ -5,7 +5,6 @@ import java.util.Arrays;
 import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 
 public class AR {
-
 	// Set p previous observation values
 	public static void setPrevPValues(Observation[] observations, int p) {
 		for (int i = p; i < observations.length; i++) {
@@ -17,28 +16,45 @@ public class AR {
 		}
 	}
 
-	// Create new OLS Regression
-	public static OLSMultipleLinearRegression OLS(Observation[] observations, int p) {
-		setPrevPValues(observations, p);
-		
-		// create y-array and X-matrix for OLS Model
-		double[][] X = new double[observations.length - p][p];
-		double[] y = new double[observations.length - p];
+	public static double[] createOLSData(Observation[] observations, int p){
+		setPrevPValues(observations,p);
+		double data[] = new double[0];
+		int j = 0;
+		// For loop over all observation there index > p
 		for (int i = p; i < observations.length; i++) {
-			y[p - i] = observations[i].getValue();
-			for (int j = 0; j < p; j++) {
-				X[p - i][j] = observations[i].getPrevPValues()[j];
+			// Enhance data array
+			data = Arrays.copyOf(data, data.length + p + 1);
+			// Store values of Observations
+			data[j] = observations[i].getValue();
+			j++;
+			for (int k = 0; k < p; k++) {
+				data[j] = observations[i].getPrevPValues()[k];
+				j++;
 			}
 
 		}
-		OLSMultipleLinearRegression OLS = new OLSMultipleLinearRegression();
-		OLS.newSampleData(y, X);
-
-		return OLS;
+		return data;
 	}
+	
+	
+	public static double[] setupOLS(Observation[] observations, int p) {
+		double[] data = createOLSData(observations, p);
+
+		// New Multiple Linear Regression Model, solve with OLS.
+		OLSMultipleLinearRegression OLS = new OLSMultipleLinearRegression();
+		OLS.newSampleData(data, observations.length - p, p);
+		double[] para = OLS.estimateRegressionParameters();
+		return(para);
+
+}
+
 
 	
-	// *********************** OLD ***********************************
+	
+	
+	
+	
+// *********************** OLD ***********************************
 	
 	// Create Array for OLS Format (y1,x1[1],x1[2],...,x1[p],y2,x2[1]...)
 	public static double[] OLSDataArray(Observation[] observations, int p) {
