@@ -7,7 +7,6 @@ import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 public class AR {
 	
 	//Fields
-	protected Observation[] observations;
 	protected int p;
 	protected double[] data;
 	protected double[] estPara;
@@ -16,25 +15,27 @@ public class AR {
 	
 	public AR(Observation[] observations, int p) {
 		this.p = p;
-		this.observations = observations;
-		setPrevPValues();
-		createOLSData();
+		setPrevPValues(observations);
+		createOLSData(observations);
 		estPara(observations.length-p,p);
-		setPrediction();	
+		setPrediction(observations);
+		calcSSE(observations);
 	}
+	
+	
 
 	// Set p previous observation values
-	protected void setPrevPValues() {
-		for (int i = p; i < observations.length; i++) {
+	protected void setPrevPValues(Observation[] observations) {
+		for(int i = p; i < observations.length; i++) {
 			double[] prevPValues = new double[p];
-			for (int j = 1; j <= p; j++) {
-				prevPValues[j - 1] = observations[i - j].getValue();
-				observations[i].setPrevPValues(prevPValues);
+			for (int j = 1; j < p+1; j++) {
+				prevPValues[j - 1] = observations[i - j].getValue();	
 			}
+			observations[i].setPrevPValues(prevPValues);
 		}
 	}
 
-	protected void createOLSData(){
+	protected void createOLSData(Observation[] observations){
 		data = new double[0];
 		int j = 0;
 		// For loop over all observation there index > p
@@ -58,25 +59,33 @@ public class AR {
 		OLSMultipleLinearRegression OLS = new OLSMultipleLinearRegression();
 		OLS.newSampleData(data, numObs, numPara);
 		estPara = OLS.estimateRegressionParameters();
+		SSE = OLS.calculateTotalSumOfSquares();
 	}
 	
-	protected void setPrediction() {
+
+	
+	protected void setPrediction(Observation[] observations) {
 		for(int i = 0; i < p; i++){
 			observations[i].setError(0);
 		}
 		for(int i = p; i <observations.length; i++){
 			double pred = estPara[0];
-			for(int j = 0; j == p; j++) {
-				pred += observations[i].getPrevPValues()[j]*estPara[j+1];
+			for(int j = 1; j < p+1; j++) {
+				pred += observations[i].getPrevPValues()[j-1]*estPara[j];
 			}
 		observations[i].setPrediction(pred);
 		observations[i].setError();
 		}
 	}
-
-	public Observation[] getObservations() {
-		return observations;
+	
+	protected void calcSSE(Observation[] observations) {
+		SSE = 0;
+		for(Observation obs : observations) {
+			SSE += obs.getError()*obs.getError();
+		}
 	}
+
+
 
 	public int getP() {
 		return p;

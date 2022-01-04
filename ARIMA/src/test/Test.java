@@ -32,26 +32,21 @@ public class Test {
 		Observation U = new Observation(20, 83.67);
 
 		Observation[] allObservations = { A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U };
-	
 		AR ar = new AR(allObservations, 2);
-		ARMA arma = new ARMA(allObservations, 2, 2);
-		for(int i = 0; i <= 2; i++) {
-			System.out.println(ar.getEstPara()[i]);			
-		}
-		/*
-		for (int i = 0; i < allObservations.length; i++) {
-			System.out.println(allObservations[i].getError());
-		}
-		
-		for(Observation obs : allObservations) {
-			if(obs.getPrevQErrors()!= null) {
-				for(int i = 0; i < obs.getPrevQErrors().length; i++) {
-					System.out.print(obs.getPrevQErrors()[i] + " ");
-				}
+		for(int j = 2; j<allObservations.length; j++) {
+			for(int i = 0; i<2; i++) { 
+			System.out.print(" "+allObservations[j].getPrevPValues()[i]);
 			}
 			System.out.print("\n");
 		}
+		for(int i = 0; i <= 2; i++) {
+			System.out.println(ar.getEstPara()[i]);			
+		}
+		System.out.println(ar.getSSE());
+		ARMA arma = new ARMA(allObservations, 2, 2);
 		
-		*/
+		for(int i = 0; i <= 4; i++) {
+			System.out.println(arma.getEstPara()[i]);			
+		}
 	}
 }

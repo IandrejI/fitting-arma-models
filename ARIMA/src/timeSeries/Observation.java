@@ -31,7 +31,7 @@ public class Observation {
 	}
 
 	public void setError() {
-		this.error = this.value-this.prediction;
+		this.error = value-prediction;
 	}
 	public void setError(double error) {
 		this.error = error;
