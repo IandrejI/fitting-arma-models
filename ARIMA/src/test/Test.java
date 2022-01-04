@@ -33,16 +33,11 @@ public class Test {
 
 		Observation[] allObservations = { A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U };
 		AR ar = new AR(allObservations, 2);
-		for(int j = 2; j<allObservations.length; j++) {
-			for(int i = 0; i<2; i++) { 
-			System.out.print(" "+allObservations[j].getPrevPValues()[i]);
-			}
-			System.out.print("\n");
-		}
 		for(int i = 0; i <= 2; i++) {
 			System.out.println(ar.getEstPara()[i]);			
 		}
 		System.out.println(ar.getSSE());
+
 		ARMA arma = new ARMA(allObservations, 2, 2);
 		
 		for(int i = 0; i <= 4; i++) {

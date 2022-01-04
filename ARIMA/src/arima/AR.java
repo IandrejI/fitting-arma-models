@@ -8,6 +8,7 @@ public class AR {
 	
 	//Fields
 	protected int p;
+	protected int maxPQ;
 	protected double[] data;
 	protected double[] estPara;
 	protected double SSE;
