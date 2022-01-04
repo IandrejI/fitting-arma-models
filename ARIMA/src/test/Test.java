@@ -33,11 +33,12 @@ public class Test {
 
 		Observation[] allObservations = { A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U };
 	
-		AR.setPrevPValues(allObservations, 2);
-		AR.setupOLS(allObservations, 2);
-		ARMA.setPrevQErrors(allObservations, 2);
-		
-	
+		AR ar = new AR(allObservations, 2);
+		ARMA arma = new ARMA(allObservations, 2, 2);
+		for(int i = 0; i <= 2; i++) {
+			System.out.println(ar.getEstPara()[i]);			
+		}
+		/*
 		for (int i = 0; i < allObservations.length; i++) {
 			System.out.println(allObservations[i].getError());
 		}
@@ -50,5 +51,7 @@ public class Test {
 			}
 			System.out.print("\n");
 		}
+		
+		*/
 	}
 }

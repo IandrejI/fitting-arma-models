@@ -6,10 +6,25 @@ import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 
 public class AR {
 	
+	//Fields
+	protected Observation[] observations;
+	protected int p;
+	protected double[] data;
+	protected double[] estPara;
+	protected double SSE;
 	
+	
+	public AR(Observation[] observations, int p) {
+		this.p = p;
+		this.observations = observations;
+		setPrevPValues();
+		createOLSData();
+		estPara(observations.length-p,p);
+		setPrediction();	
+	}
+
 	// Set p previous observation values
-	
-	public static void setPrevPValues(Observation[] observations, int p) {
+	protected void setPrevPValues() {
 		for (int i = p; i < observations.length; i++) {
 			double[] prevPValues = new double[p];
 			for (int j = 1; j <= p; j++) {
@@ -19,8 +34,8 @@ public class AR {
 		}
 	}
 
-	public static double[] createOLSData(Observation[] observations, int p){
-		double data[] = new double[0];
+	protected void createOLSData(){
+		data = new double[0];
 		int j = 0;
 		// For loop over all observation there index > p
 		for (int i = p; i < observations.length; i++) {
@@ -33,32 +48,48 @@ public class AR {
 				data[j] = observations[i].getPrevPValues()[k];
 				j++;
 			}
-
 		}
-		return data;
 	}
 	
 	
-	public static void setupOLS(Observation[] observations, int p) {
-		double[] data = createOLSData(observations, p);
+	protected void estPara(int numObs, int numPara) {
 
 		// New Multiple Linear Regression Model, solve with OLS.
 		OLSMultipleLinearRegression OLS = new OLSMultipleLinearRegression();
-		OLS.newSampleData(data, observations.length-p, p);
-		
-		double[] para = OLS.estimateRegressionParameters();
+		OLS.newSampleData(data, numObs, numPara);
+		estPara = OLS.estimateRegressionParameters();
+	}
+	
+	protected void setPrediction() {
 		for(int i = 0; i < p; i++){
 			observations[i].setError(0);
 		}
 		for(int i = p; i <observations.length; i++){
-			double pred = para[0];
+			double pred = estPara[0];
 			for(int j = 0; j == p; j++) {
-				pred += observations[i].getPrevPValues()[j]*para[j+1];
+				pred += observations[i].getPrevPValues()[j]*estPara[j+1];
 			}
 		observations[i].setPrediction(pred);
 		observations[i].setError();
 		}
 	}
+
+	public Observation[] getObservations() {
+		return observations;
+	}
+
+	public int getP() {
+		return p;
+	}
+
+	public double[] getEstPara() {
+		return estPara;
+	}
+
+	public double getSSE() {
+		return SSE;
+	}
+	
 	
 }
 
@@ -67,45 +98,3 @@ public class AR {
 	
 	
 	
-	
-// *********************** OLD ***********************************
-/*	
-	
-	// Create Array for OLS Format (y1,x1[1],x1[2],...,x1[p],y2,x2[1]...)
-	public static double[] OLSDataArray(Observation[] observations, int p) {
-		// Initialize array of doubles to store regression-variables
-		double[] data = new double[0];
-		int j = 0;
-		// For loop over all observation there index > p
-		for (int i = p; i < observations.length; i++) {
-			// Enhance data array
-			data = Arrays.copyOf(data, data.length + p + 1);
-			// Store values of Observations
-			for (int q = 0; q <= p; q++) {
-				data[j] = observations[i - q].getValue();
-				j++;
-			}
-
-		}
-		return data;
-	}
-
-	// Method to set starting Errors
-	public static void errorSetupOLS(Observation[] observations, int p) {
-		double[] data = OLSDataArray(observations, p);
-
-		// New Multiple Linear Regression Model, solve with OLS.
-		OLSMultipleLinearRegression OLS = new OLSMultipleLinearRegression();
-		OLS.newSampleData(data, observations.length - p, p);
-		double[] estResid = OLS.estimateResiduals();
-
-		for (int i = 0; i < p; i++) {
-			observations[i].setError(0);
-		}
-		for (int i = p; i < observations.length; i++) {
-			observations[i].setError(estResid[i - p]);
-		}
-
-	}
-}
-*/
