@@ -32,16 +32,12 @@ public class Test {
 		Observation U = new Observation(20, 83.67);
 
 		Observation[] allObservations = { A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U };
-		AR ar = new AR(allObservations, 2);
-		for(int i = 0; i <= 2; i++) {
-			System.out.println(ar.getEstPara()[i]);			
-		}
-		System.out.println(ar.getSSE());
-
-		ARMA arma = new ARMA(allObservations, 2, 2);
+		AR ar = new AR(2);
+		ar.newARData(allObservations);
+		ar.printResult();
 		
-		for(int i = 0; i <= 4; i++) {
-			System.out.println(arma.getEstPara()[i]);			
-		}
+		ARMA arma = new ARMA(2, 2);
+		arma.newARMAData(allObservations);
+		arma.printResult();
 	}
 }

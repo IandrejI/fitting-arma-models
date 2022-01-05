@@ -11,18 +11,23 @@ public class AR {
 	protected int maxPQ;
 	protected double[] data;
 	protected double[] estPara;
+	protected double intercept;
+	protected double[] psiHat;
 	protected double SSE;
 	
 	
-	public AR(Observation[] observations, int p) {
+	public AR(int p) {
 		this.p = p;
+	}
+	
+	public void newARData(Observation[] observations) {
 		setPrevPValues(observations);
 		createOLSData(observations);
 		estPara(observations.length-p,p);
+		storePsiHat();
 		setPrediction(observations);
 		calcSSE(observations);
 	}
-	
 	
 
 	// Set p previous observation values
@@ -63,16 +68,22 @@ public class AR {
 		SSE = OLS.calculateTotalSumOfSquares();
 	}
 	
+	protected void storePsiHat(){
+		psiHat = new double[p];
+		intercept = estPara[0];
+		for(int i = 1; i<=p; i++) {
+			psiHat[i-1] = estPara[i];
+		}
+	}
 
-	
 	protected void setPrediction(Observation[] observations) {
 		for(int i = 0; i < p; i++){
 			observations[i].setError(0);
 		}
 		for(int i = p; i <observations.length; i++){
-			double pred = estPara[0];
-			for(int j = 1; j < p+1; j++) {
-				pred += observations[i].getPrevPValues()[j-1]*estPara[j];
+			double pred = intercept;
+			for(int j = 1; j <= p; j++) {
+				pred += observations[i].getPrevPValues()[j-1]*psiHat[j-1];
 			}
 		observations[i].setPrediction(pred);
 		observations[i].setError();
@@ -86,7 +97,18 @@ public class AR {
 		}
 	}
 
-
+	public void printResult() {
+		String format1 = "%1$-10s-%2$-10s-%3$-10s\n";
+		String format2 = "%1$-10s| %2$-10s\n";
+		System.out.format(format1,"----------" ,"Result: AR("+p+")","----------\n"); 
+		System.out.format(format2, "Error", "Value");
+		System.out.format(format2, "SSE",SSE+"\n");
+		System.out.format(format2, "Param.","Value");
+		System.out.format(format2, "c",intercept);
+		for(int i = 0; i<psiHat.length; i++) {
+		System.out.format(format2, "AR"+i,psiHat[i]);
+		}
+	}
 
 	public int getP() {
 		return p;
@@ -99,6 +121,15 @@ public class AR {
 	public double getSSE() {
 		return SSE;
 	}
+
+	public double getIntercept() {
+		return intercept;
+	}
+
+	public double[] getPsiHat() {
+		return psiHat;
+	}
+	
 	
 	
 }
