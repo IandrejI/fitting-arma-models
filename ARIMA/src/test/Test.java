@@ -1,9 +1,8 @@
 package test;
 
-import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
-
 import arima.AR;
 import arima.ARMA;
+import heuristik.BruteForce;
 import timeSeries.Observation;
 
 public class Test {
@@ -39,5 +38,11 @@ public class Test {
 		ARMA arma = new ARMA(2, 2);
 		arma.newARMAData(allObservations);
 		arma.printResult();
+		
+		int[] p = {0,1,2,3,4,5};
+		int[] q = {0,1,2,3,4,5};
+		
+		ARMA finalModel = BruteForce.newARMAForce(allObservations, p, q);
+		finalModel.printResult();
 	}
 }
