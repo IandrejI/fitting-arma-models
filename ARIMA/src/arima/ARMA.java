@@ -25,7 +25,7 @@ public class ARMA extends AR {
 		storePsiHat();
 		storeTetaHat();
 		setPrediction(observations);
-		calcSSE(observations);
+		//calcSSE(observations);
 	}
 	
 
@@ -105,10 +105,10 @@ public class ARMA extends AR {
 		System.out.format(format2, "Param.","Value");
 		System.out.format(format2, "c",intercept);
 		for(int i = 0; i<psiHat.length; i++) {
-		System.out.format(format2, "AR"+i,psiHat[i]);
+		System.out.format(format2, "AR"+(i+1),psiHat[i]);
 		}
 		for(int i = 0; i<tetaHat.length; i++) {
-			System.out.format(format2, "MA"+i,tetaHat[i]);
+			System.out.format(format2, "MA"+(i+1),tetaHat[i]);
 		}
 	}
 	

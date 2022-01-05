@@ -26,7 +26,7 @@ public class AR {
 		estPara(observations.length-p,p);
 		storePsiHat();
 		setPrediction(observations);
-		calcSSE(observations);
+		//calcSSE(observations);
 	}
 	
 
@@ -65,7 +65,7 @@ public class AR {
 		OLSMultipleLinearRegression OLS = new OLSMultipleLinearRegression();
 		OLS.newSampleData(data, numObs, numPara);
 		estPara = OLS.estimateRegressionParameters();
-		SSE = OLS.calculateTotalSumOfSquares();
+		SSE = OLS.calculateResidualSumOfSquares();
 	}
 	
 	protected void storePsiHat(){
@@ -106,7 +106,7 @@ public class AR {
 		System.out.format(format2, "Param.","Value");
 		System.out.format(format2, "c",intercept);
 		for(int i = 0; i<psiHat.length; i++) {
-		System.out.format(format2, "AR"+i,psiHat[i]);
+		System.out.format(format2, "AR"+(i+1),psiHat[i]);
 		}
 	}
 
