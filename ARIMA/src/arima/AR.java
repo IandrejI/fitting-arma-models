@@ -45,16 +45,20 @@ public class AR {
 		}
 	}
 
+	// Method to create OLSData with array. Format: (y_1, x_11, x_12, ... ,x_1p, y_2, x_21, x_22,...,x2p,...)
 	protected void createOLSData(Observation[] observations){
+		// Init. new double data array with length 0 
 		data = new double[0];
+		// Set j = 0
 		int j = 0;
 		// For loop over all observation there index > p
 		for (int i = p; i < observations.length; i++) {
-			// Enhance data array
+			// Enhance data array p+1 (for observation value and prev. p-values)
 			data = Arrays.copyOf(data, data.length+p+1);
-			// Store values of Observations
+			// Store value of observation i
 			data[j] = observations[i].getValue();
 			j++;
+			// Store previous p values of observation i
 			for (int k = 0; k < p; k++) {
 				data[j] = observations[i].getPrevPValues()[k];
 				j++;
@@ -68,9 +72,9 @@ public class AR {
 		// New Multiple Linear Regression Model, solve with OLS.
 		OLSMultipleLinearRegression OLS = new OLSMultipleLinearRegression();
 		OLS.newSampleData(data, numObs, numPara);
-		// Save parameters
+		// Store parameters
 		estPara = OLS.estimateRegressionParameters();
-		// Save SSE
+		// Store SSE
 		SSE = OLS.calculateResidualSumOfSquares();
 	}
 	
@@ -82,7 +86,8 @@ public class AR {
 			psiHat[i-1] = estPara[i];
 		}
 	}
-
+	
+	// Method to set prediction and errors for every observation 
 	protected void setPrediction(Observation[] observations) {
 		for(int i = 0; i < p; i++){
 			observations[i].setError(0);
@@ -97,13 +102,16 @@ public class AR {
 		}
 	}
 	
+	/*
 	protected void calcSSE(Observation[] observations) {
 		SSE = 0;
 		for(Observation obs : observations) {
 			SSE += obs.getError()*obs.getError();
 		}
 	}
-
+	*/
+	
+	// Method for printing Results 
 	public void printResult() {
 		String format1 = "\n%1$-10s-%2$-10s-%3$-10s\n";
 		String format2 = "%1$-10s| %2$-10s\n";
