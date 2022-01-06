@@ -29,10 +29,13 @@ public class Observation {
 	public double getError() {
 		return error;
 	}
-
+	
+	// Calculate error with e_t = x_t - xHat_t
 	public void setError() {
 		this.error = value-prediction;
 	}
+	
+	// Set error with double value
 	public void setError(double error) {
 		this.error = error;
 	}

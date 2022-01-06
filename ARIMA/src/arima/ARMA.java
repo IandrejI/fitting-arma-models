@@ -7,7 +7,7 @@ import timeSeries.Observation;
 public class ARMA extends AR {
 	// Fields
 	private int q;
-	private double[] tetaHat;
+	private double[] thetaHat;
 	private int maxPQ;
 
 	public ARMA(int p, int q) {
@@ -23,7 +23,7 @@ public class ARMA extends AR {
 		createOLSData(observations);
 		estPara(observations.length-maxPQ,p+q);
 		storePsiHat();
-		storeTetaHat();
+		storeThetaHat();
 		setPrediction(observations);
 		//calcSSE(observations);
 	}
@@ -70,10 +70,10 @@ public class ARMA extends AR {
 	}
 	
 	
-	private void storeTetaHat() {
-		tetaHat = new double[q];
+	private void storeThetaHat() {
+		thetaHat = new double[q];
 		for(int i = p+1; i<=p+q; i++) {
-			tetaHat[i-(p+1)] = estPara[i]; 
+			thetaHat[i-(p+1)] = estPara[i]; 
 		}
 	}
 	
@@ -88,7 +88,7 @@ public class ARMA extends AR {
 				pred += observations[i].getPrevPValues()[j-1]*psiHat[j-1];
 			}
 			for(int j = 1; j <= q; j++) {
-				pred += observations[i].getPrevQErrors()[j-1]*tetaHat[j-1];
+				pred += observations[i].getPrevQErrors()[j-1]*thetaHat[j-1];
 			}
 		observations[i].setPrediction(pred);
 		observations[i].setError();
@@ -97,7 +97,7 @@ public class ARMA extends AR {
 	
 	@Override
 	public void printResult() {
-		String format1 = "%1$-10s-%2$-10s-%3$-10s\n";
+		String format1 = "\n%1$-10s-%2$-10s-%3$-10s\n";
 		String format2 = "%1$-10s| %2$-10s\n";
 		System.out.format(format1,"----------" ,"Result: ARMA("+p+","+q+")","----------\n"); 
 		System.out.format(format2, "Error", "Value");
@@ -107,8 +107,8 @@ public class ARMA extends AR {
 		for(int i = 0; i<psiHat.length; i++) {
 		System.out.format(format2, "AR"+(i+1),psiHat[i]);
 		}
-		for(int i = 0; i<tetaHat.length; i++) {
-			System.out.format(format2, "MA"+(i+1),tetaHat[i]);
+		for(int i = 0; i<thetaHat.length; i++) {
+			System.out.format(format2, "MA"+(i+1),thetaHat[i]);
 		}
 	}
 	
@@ -117,7 +117,7 @@ public class ARMA extends AR {
 	}
 
 	public double[] getTetaHat() {
-		return tetaHat;
+		return thetaHat;
 	}
 
 }

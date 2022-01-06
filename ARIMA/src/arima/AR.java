@@ -15,11 +15,12 @@ public class AR {
 	protected double[] psiHat;
 	protected double SSE;
 	
-	
+	// Constructor for AR
 	public AR(int p) {
 		this.p = p;
 	}
 	
+	// Wrapper-Method for new AR-Model
 	public void newARData(Observation[] observations) {
 		setPrevPValues(observations);
 		createOLSData(observations);
@@ -30,10 +31,13 @@ public class AR {
 	}
 	
 
-	// Set p previous observation values
+	// Set p previous observation values for every Observation there t>p
 	protected void setPrevPValues(Observation[] observations) {
+		// starting with i = p
 		for(int i = p; i < observations.length; i++) {
+			// init. new double with length p
 			double[] prevPValues = new double[p];
+			// Set prevPValue with prev. i-j observation value
 			for (int j = 1; j < p+1; j++) {
 				prevPValues[j - 1] = observations[i - j].getValue();	
 			}
@@ -64,10 +68,13 @@ public class AR {
 		// New Multiple Linear Regression Model, solve with OLS.
 		OLSMultipleLinearRegression OLS = new OLSMultipleLinearRegression();
 		OLS.newSampleData(data, numObs, numPara);
+		// Save parameters
 		estPara = OLS.estimateRegressionParameters();
+		// Save SSE
 		SSE = OLS.calculateResidualSumOfSquares();
 	}
 	
+	// Store estimate for psi and intercept 
 	protected void storePsiHat(){
 		psiHat = new double[p];
 		intercept = estPara[0];
@@ -98,7 +105,7 @@ public class AR {
 	}
 
 	public void printResult() {
-		String format1 = "%1$-10s-%2$-10s-%3$-10s\n";
+		String format1 = "\n%1$-10s-%2$-10s-%3$-10s\n";
 		String format2 = "%1$-10s| %2$-10s\n";
 		System.out.format(format1,"----------" ,"Result: AR("+p+")","----------\n"); 
 		System.out.format(format2, "Error", "Value");
