@@ -15,9 +15,10 @@ public class ARMA extends AR {
 		this.q = q;
 	}
 	
-	public void newARMAData(Observation[] observations){
+	@Override
+	public void newSampleData(Observation[] observations){
 		AR ar = new AR(p);
-		ar.newARData(observations);
+		ar.newSampleData(observations);
 		setMaxPQ();
 		setPrevQErrors(observations);
 		createOLSData(observations);
@@ -79,7 +80,7 @@ public class ARMA extends AR {
 	
 	@Override
 	protected void setPrediction(Observation[] observations) {
-		for(int i = 0; i < p; i++){
+		for(int i = 0; i < maxPQ; i++){
 			observations[i].setError(0);
 		}
 		for(int i = maxPQ; i <observations.length; i++){

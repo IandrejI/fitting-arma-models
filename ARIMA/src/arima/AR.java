@@ -21,7 +21,7 @@ public class AR {
 	}
 	
 	// Wrapper-Method for new AR-Model
-	public void newARData(Observation[] observations) {
+	public void newSampleData(Observation[] observations) {
 		setPrevPValues(observations);
 		createOLSData(observations);
 		estPara(observations.length-p,p);
@@ -110,6 +110,7 @@ public class AR {
 		}
 	}
 	*/
+
 	
 	// Method for printing Results 
 	public void printResult() {

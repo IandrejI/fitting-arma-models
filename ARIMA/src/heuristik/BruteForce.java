@@ -8,7 +8,7 @@ public class BruteForce {
 		for(int i = 0; i<p.length; i++) {
 			for(int j = 0; j<q.length; j++) {
 				ARMA currentFit = new ARMA(p[i], q[j]);
-				currentFit.newARMAData(observations);
+				currentFit.newSampleData(observations);
 				if(bestFit == null) {
 					bestFit = currentFit;
 				} else if(currentFit.getSSE() < bestFit.getSSE()) {
