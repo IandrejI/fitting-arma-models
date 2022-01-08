@@ -50,12 +50,12 @@ public class ARMA extends AR {
 	
 	@Override
 	protected void createOLSData(Observation[] observations) {
-		data = new double[0];
+		data = new double[(observations.length-maxPQ)*(p+q+1)];
 		int j = 0;
 		// For loop over all observation there index > p
 		for (int i = maxPQ; i < observations.length; i++) {
 			// Enhance data array
-			data = Arrays.copyOf(data, data.length + p + q + 1);
+			//data = Arrays.copyOf(data, data.length + p + q + 1);
 			// Store values of Observations
 			data[j] = observations[i].getValue();
 			j++;
