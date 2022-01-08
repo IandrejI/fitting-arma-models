@@ -54,7 +54,6 @@ public class AR {
 		// For loop over all observation there index > p
 		for (int i = p; i < observations.length; i++) {
 			// Enhance data array p+1 (for observation value and prev. p-values)
-			//data = Arrays.copyOf(data, data.length+p+1);
 			// Store value of observation i
 			data[j] = observations[i].getValue();
 			j++;

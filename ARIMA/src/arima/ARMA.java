@@ -55,7 +55,6 @@ public class ARMA extends AR {
 		// For loop over all observation there index > p
 		for (int i = maxPQ; i < observations.length; i++) {
 			// Enhance data array
-			//data = Arrays.copyOf(data, data.length + p + q + 1);
 			// Store values of Observations
 			data[j] = observations[i].getValue();
 			j++;
