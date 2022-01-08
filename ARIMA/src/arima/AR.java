@@ -13,6 +13,7 @@ public class AR {
 	protected double intercept;
 	protected double[] psiHat;
 	protected double SSE;
+	protected double[] forecast;
 	
 	// Constructor for AR
 	public AR(int p) {
@@ -124,9 +125,18 @@ public class AR {
 		}
 	}
 	
-	
-	
-	
+	//concept for forecast method, work in progress
+	public void forecast(Observation[] observations, int h) {
+		double[] fc = new double[h];
+		for(int i = 0; i < h; i++) {
+			double fct = intercept;
+			for(int j = 0; j < p; j++) {
+				fct += observations[observations.length+i-j].getValue() * psiHat[j];
+			}
+			fc[i] = fct;
+		}
+		forecast = fc;
+	}
 	
 
 	public int getP() {
