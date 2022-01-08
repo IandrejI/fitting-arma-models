@@ -47,13 +47,12 @@ public class AR {
 
 	// Method to create OLSData with array. Format: (y_1, x_11, x_12, ... ,x_1p, y_2, x_21, x_22,...,x2p,...)
 	protected void createOLSData(Observation[] observations){
-		// Init. new double data array with length 0 
+		// Init. new double data array with length (n-p)*(p+1)
 		data = new double[(observations.length-p)*(p+1)];
 		// Set j = 0
 		int j = 0;
 		// For loop over all observation there index > p
 		for (int i = p; i < observations.length; i++) {
-			// Enhance data array p+1 (for observation value and prev. p-values)
 			// Store value of observation i
 			data[j] = observations[i].getValue();
 			j++;
