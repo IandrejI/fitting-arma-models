@@ -39,7 +39,7 @@ public class Test {
 		arma.newSampleData(allObservations);
 		arma.printResult();
 		
-		int[] p = {0,1,2,3,4,5, 6};
+		int[] p = {0,1,2,3,4,5};
 		int[] q = {0,1,2,3,4,5};
 		
 		ARMA finalModel = BruteForce.newARMAForce(allObservations, p, q);
