@@ -30,6 +30,16 @@ public class AR {
 		//calcSSE(observations);
 	}
 	
+	
+	// Method to create observation array out of array of doubles
+	public static Observation[] createObsArray(double[] values) {
+		Observation[] observations = new Observation[values.length];
+		for(int i = 0; i<values.length; i++) {
+			observations[i] = new Observation(i, values[i]);
+		}
+		return observations;
+	}
+	
 
 	// Set p previous observation values for every Observation there t>p
 	protected void setPrevPValues(Observation[] observations) {
