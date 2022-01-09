@@ -33,16 +33,17 @@ public class Test {
 		Observation[] allObservations = { A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U };
 		AR ar = new AR(2);
 		ar.newSampleData(allObservations);
+		ar.forecast(allObservations, 10);
 		ar.printResult();
 		
-		ARMA arma = new ARMA(2, 2);
-		arma.newSampleData(allObservations);
-		arma.printResult();
+//		ARMA arma = new ARMA(2, 2);
+//		arma.newSampleData(allObservations);
+//		arma.printResult();
 		
-		int[] p = {0,1,2,3,4,5};
-		int[] q = {0,1,2,3,4,5};
+//		int[] p = {0,1,2,3,4,5};
+//		int[] q = {0,1,2,3,4,5};
 		
-		ARMA finalModel = BruteForce.newARMAForce(allObservations, p, q);
-		finalModel.printResult();
+//		ARMA finalModel = BruteForce.newARMAForce(allObservations, p, q);
+//		finalModel.printResult();
 	}
 }

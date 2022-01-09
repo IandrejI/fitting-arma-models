@@ -1,7 +1,10 @@
 package arima;
 
 import timeSeries.Observation;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+
 import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 
 public class AR {
@@ -121,21 +124,44 @@ public class AR {
 		System.out.format(format2, "Param.","Value");
 		System.out.format(format2, "c",intercept);
 		for(int i = 0; i<psiHat.length; i++) {
-		System.out.format(format2, "AR"+(i+1),psiHat[i]);
+			System.out.format(format2, "AR"+(i+1),psiHat[i]);
+		}
+		for(int i = 0; i<forecast.length; i++) {
+			System.out.format(format2, "Forecast"+(i+1),forecast[i]);
 		}
 	}
 	
-	//concept for forecast method, work in progress
+	//method to forecast the h next steps
 	public void forecast(Observation[] observations, int h) {
+		//init. double array for h fc values
 		double[] fc = new double[h];
+		//iterate h times 
 		for(int i = 0; i < h; i++) {
+			//init. fc value with intercept
 			double fct = intercept;
+			//iterate through the parameters
 			for(int j = 0; j < p; j++) {
-				fct += observations[observations.length+i-j].getValue() * psiHat[j];
+				//multiply the last value with p1, the second last with p2, ... add to fc value
+				fct += observations[observations.length-1-j].getValue() * psiHat[j];
 			}
+			//store result in fc array
 			fc[i] = fct;
+			//create new observation with the forecast value as value
+			Observation ob = new Observation(observations.length, fct);
+			//add new observation to LOCAL observation array only
+			observations = addObservation(observations, ob);
 		}
+		//set fc value array as field forecast
 		forecast = fc;
+	}
+	
+	//helper function, to add an observation to an array of observations and return the new array
+	private static Observation[] addObservation(Observation[] observations, Observation newObservation) {
+		ArrayList<Observation> observationList = new ArrayList<Observation>(Arrays.asList(observations));
+		observationList.add(newObservation);
+		Observation[] observationArray = new Observation[observationList.size()];
+		observationList.toArray(observationArray);
+		return observationArray;
 	}
 	
 
@@ -157,6 +183,14 @@ public class AR {
 
 	public double[] getPsiHat() {
 		return psiHat;
+	}
+
+	public double[] getForecast() {
+		return forecast;
+	}
+
+	public void setForecast(double[] forecast) {
+		this.forecast = forecast;
 	}
 	
 	
