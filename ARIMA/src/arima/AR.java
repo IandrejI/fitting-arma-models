@@ -12,10 +12,12 @@ public class AR {
 	//Fields
 	protected int p;
 	protected double[] data;
+	protected int nTrain;
 	protected double[] estPara;
 	protected double intercept;
 	protected double[] psiHat;
-	protected double SSE;
+	protected double trainSSE;
+	protected double testSSE;
 	protected double[] forecast;
 	protected double[] z;
 	
@@ -25,13 +27,14 @@ public class AR {
 	}
 	
 	// Wrapper-Method for new AR-Model
-	public void newSampleData(Observation[] observations) {
+	public void newSampleData(Observation[] observations, double probTrain) {
+		this.nTrain = (int) Math.round(probTrain*observations.length);
 		setPrevPValues(observations);
 		createOLSData(observations);
-		estPara(observations.length-p,p);
+		estPara(nTrain-p,p);
 		storePsiHat();
 		setPrediction(observations);
-		//calcSSE(observations);
+		calcSSE(observations);
 	}
 	
 	
@@ -62,11 +65,11 @@ public class AR {
 	// Method to create OLSData with array. Format: (y_1, x_11, x_12, ... ,x_1p, y_2, x_21, x_22,...,x2p,...)
 	protected void createOLSData(Observation[] observations){
 		// Init. new double data array with length (n-p)*(p+1)
-		data = new double[(observations.length-p)*(p+1)];
+		data = new double[(nTrain-p)*(p+1)];
 		// Set j = 0
 		int j = 0;
 		// For loop over all observation there index > p
-		for (int i = p; i < observations.length; i++) {
+		for (int i = p; i < nTrain; i++) {
 			// Store value of observation i
 			data[j] = observations[i].getValue();
 			j++;
@@ -87,7 +90,7 @@ public class AR {
 		// Store parameters
 		estPara = OLS.estimateRegressionParameters();
 		// Store SSE
-		SSE = OLS.calculateResidualSumOfSquares();
+		//trainSSE = OLS.calculateResidualSumOfSquares();
 	}
 	
 	// Store estimate for psi and intercept 
@@ -101,9 +104,10 @@ public class AR {
 	
 	// Method to set prediction and errors for every observation 
 	protected void setPrediction(Observation[] observations) {
-		for(int i = 0; i < p; i++){
+		/*for(int i = 0; i < p; i++){
 			observations[i].setError(0);
 		}
+		*/
 		for(int i = p; i <observations.length; i++){
 			//invoke predict method
 			double pred = predict(observations[i]);
@@ -129,22 +133,28 @@ public class AR {
 		return pred;
 	}
 	
-	/*
+	
 	protected void calcSSE(Observation[] observations) {
-		SSE = 0;
-		for(Observation obs : observations) {
-			SSE += obs.getError()*obs.getError();
+		trainSSE = 0;
+		testSSE = 0;
+		for(int i = 0; i<nTrain; i++) {
+			trainSSE += observations[i].getError()*observations[i].getError();
+		}
+		for(int i = nTrain; i<observations.length; i++) {
+			testSSE += observations[i].getError()*observations[i].getError();
 		}
 	}
-	*/
+
 	
 	// Method for printing Results 
 	public void printResult() {
 		String format1 = "\n%1$-10s-%2$-10s-%3$-10s\n";
 		String format2 = "%1$-10s| %2$-10s\n";
-		System.out.format(format1,"----------" ,"Result: AR("+p+")","----------\n"); 
+		System.out.format(format1,"----------" ,"Result: AR("+p+")","----------"); 
+		System.out.println("n = "+nTrain+"\n"); 
 		System.out.format(format2, "Error", "Value");
-		System.out.format(format2, "SSE",SSE+"\n");
+		System.out.format(format2, "Train SSE",trainSSE);
+		System.out.format(format2, "Test  SSE",testSSE+"\n");
 		System.out.format(format2, "Param.","Value");
 		System.out.format(format2, "c",intercept);
 		for(int i = 0; i<psiHat.length; i++) {
@@ -196,8 +206,8 @@ public class AR {
 		return estPara;
 	}
 
-	public double getSSE() {
-		return SSE;
+	public double getTrainSSE() {
+		return trainSSE;
 	}
 
 	public double getIntercept() {
@@ -222,6 +232,18 @@ public class AR {
 
 	public void setZ(double[] z) {
 		this.z = z;
+	}
+
+	public double[] getData() {
+		return data;
+	}
+
+	public int getnTrain() {
+		return nTrain;
+	}
+
+	public double getTestSSE() {
+		return testSSE;
 	}
 	
 	

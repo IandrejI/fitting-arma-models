@@ -6,7 +6,7 @@ public class Observation {
 	private int index;
 	private double value;
 	private double prediction;
-	private double error;
+	private double error = 0;
 	private double[] prevPValues;
 	private double[] prevQErrors;
 	

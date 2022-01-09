@@ -1,6 +1,5 @@
 package arima;
 
-import java.util.Arrays;
 
 import timeSeries.Observation;
 
@@ -17,9 +16,9 @@ public class ARMA extends AR {
 	}
 	
 	@Override
-	public void newSampleData(Observation[] observations){
+	public void newSampleData(Observation[] observations, double probTrain){
 		AR ar = new AR(p);
-		ar.newSampleData(observations);
+		ar.newSampleData(observations, probTrain);
 		setMaxPQ();
 		setPrevQErrors(observations);
 		createOLSData(observations);
@@ -52,10 +51,10 @@ public class ARMA extends AR {
 	@Override
 	protected void createOLSData(Observation[] observations) {
 		// Init. new double data array with length (n-p)*(p+q+1)
-		data = new double[(observations.length-maxPQ)*(p+q+1)];
+		data = new double[(nTrain-maxPQ)*(p+q+1)];
 		int j = 0;
 		// For loop over all observation there index > p
-		for (int i = maxPQ; i < observations.length; i++) {
+		for (int i = maxPQ; i < nTrain; i++) {
 			// Store values of Observations
 			data[j] = observations[i].getValue();
 			j++;
@@ -102,7 +101,7 @@ public class ARMA extends AR {
 		String format2 = "%1$-10s| %2$-10s\n";
 		System.out.format(format1,"----------" ,"Result: ARMA("+p+","+q+")","----------\n"); 
 		System.out.format(format2, "Error", "Value");
-		System.out.format(format2, "SSE",SSE+"\n");
+		System.out.format(format2, "SSE",trainSSE+"\n");
 		System.out.format(format2, "Param.","Value");
 		System.out.format(format2, "c",intercept);
 		for(int i = 0; i<psiHat.length; i++) {

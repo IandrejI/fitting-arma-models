@@ -15,7 +15,7 @@ public class Test {
 		Observation[] allObservations = AR.createObsArray(values);
 		
 		AR ar = new AR(2);
-		ar.newSampleData(allObservations);
+		ar.newSampleData(allObservations,0.8);
 		ar.forecast(allObservations, 3);
 		ar.printResult();
 		
