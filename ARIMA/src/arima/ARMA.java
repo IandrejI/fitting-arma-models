@@ -9,6 +9,7 @@ public class ARMA extends AR {
 	private int q;
 	private double[] thetaHat;
 	private int maxPQ;
+	private double[] forecast;
 
 	public ARMA(int p, int q) {
 		super(p);
@@ -110,6 +111,40 @@ public class ARMA extends AR {
 		for(int i = 0; i<thetaHat.length; i++) {
 			System.out.format(format2, "MA"+(i+1),thetaHat[i]);
 		}
+		for(int i = 0; i<forecast.length; i++) {
+			System.out.format(format2, "Forecast"+(i+1),forecast[i]);
+		}
+	}
+	
+	@Override
+	//method to forecast the h next steps
+	public void forecast(Observation[] observations, int h) {
+		//init. double array for h fc values
+		double[] fc = new double[h];
+		//iterate h times 
+		for(int i = 0; i < h; i++) {
+			//init. fc value with intercept
+			double fct = intercept;
+			//iterate through the parameters
+			for(int j = 0; j < p; j++) {
+				//multiply the last value with p1, the second last with p2, ... add to fc value
+				fct += observations[observations.length-1-j].getValue() * getPsiHat()[j];
+				System.out.println("p " + j +" "+ observations[observations.length-1-j].getValue());
+			}
+			for(int j = 0; j < q; j++) {
+				//multiply the last value with p1, the second last with p2, ... add to fc value
+				fct += getZ()[j] * getTetaHat()[j];
+				System.out.println("q " + j+ " " + observations[observations.length-1-j].getError());
+			}
+			//store result in fc array
+			fc[i] = fct;
+			//create new observation with the forecast value as value
+			Observation ob = new Observation(observations.length, fct);
+			//add new observation to LOCAL observation array only
+			observations = addObservation(observations, ob);
+		}
+		//set fc value array as field forecast
+		forecast = fc;
 	}
 	
 	public double[] getPsiHat() {

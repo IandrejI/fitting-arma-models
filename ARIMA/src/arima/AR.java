@@ -17,6 +17,7 @@ public class AR {
 	protected double[] psiHat;
 	protected double SSE;
 	protected double[] forecast;
+	protected double[] z;
 	
 	// Constructor for AR
 	public AR(int p) {
@@ -104,13 +105,28 @@ public class AR {
 			observations[i].setError(0);
 		}
 		for(int i = p; i <observations.length; i++){
-			double pred = intercept;
-			for(int j = 1; j <= p; j++) {
-				pred += observations[i].getPrevPValues()[j-1]*psiHat[j-1];
-			}
+			//invoke predict method
+			double pred = predict(observations[i]);
+//			for(int j = 1; j <= p; j++) {
+//				pred += observations[i].getPrevPValues()[j-1]*psiHat[j-1];
+//			}
+//			for(int j = 0; j < p; j++) {
+//				pred += observations[i].getPrevPValues()[j]*psiHat[j];
+//			}
+		
+		
 			observations[i].setPrediction(pred);
 			observations[i].setError();
 		}
+	}
+	
+	//separate predict function, to calc predicted value based on prevPValues and PsiHat
+	protected double predict(Observation observation) {
+		double pred = intercept;
+		for(int j = 0; j < p; j++) {
+			pred += observation.getPrevPValues()[j]*psiHat[j];
+		}
+		return pred;
 	}
 	
 	/*
@@ -144,27 +160,26 @@ public class AR {
 		//init. double array for h fc values
 		double[] fc = new double[h];
 		//iterate h times 
-		for(int i = 0; i < h; i++) {
-			//init. fc value with intercept
-			double fct = intercept;
-			//iterate through the parameters
-			for(int j = 0; j < p; j++) {
-				//multiply the last value with p1, the second last with p2, ... add to fc value
-				fct += observations[observations.length-1-j].getValue() * psiHat[j];
-			}
-			//store result in fc array
-			fc[i] = fct;
-			//create new observation with the forecast value as value
-			Observation ob = new Observation(observations.length, fct);
+		for(int i = 0; i < h; i++) {	
+			//create new observation with value 0
+			Observation ob = new Observation(observations.length, 0);
 			//add new observation to LOCAL observation array only
 			observations = addObservation(observations, ob);
+			//set prev p values for all observations
+			setPrevPValues(observations);
+			//estimate forecast value by predicting the value for the new observation
+			double fct = predict(observations[observations.length - 1]);
+			//set the resulting forecast value as value of the the observation
+			observations[observations.length - 1].setValue(fct);
+			//store result in fc array
+			fc[i] = fct;
 		}
 		//set fc value array as field forecast
 		forecast = fc;
 	}
 	
 	//helper function, to add an observation to an array of observations and return the new array
-	private static Observation[] addObservation(Observation[] observations, Observation newObservation) {
+	protected static Observation[] addObservation(Observation[] observations, Observation newObservation) {
 		ArrayList<Observation> observationList = new ArrayList<Observation>(Arrays.asList(observations));
 		observationList.add(newObservation);
 		Observation[] observationArray = new Observation[observationList.size()];
@@ -199,6 +214,14 @@ public class AR {
 
 	public void setForecast(double[] forecast) {
 		this.forecast = forecast;
+	}
+
+	public double[] getZ() {
+		return z;
+	}
+
+	public void setZ(double[] z) {
+		this.z = z;
 	}
 	
 	

@@ -16,11 +16,12 @@ public class Test {
 		
 		AR ar = new AR(2);
 		ar.newSampleData(allObservations);
-		ar.forecast(allObservations, 2);
+		ar.forecast(allObservations, 3);
 		ar.printResult();
 		
 //		ARMA arma = new ARMA(2, 2);
 //		arma.newSampleData(allObservations);
+//		arma.forecast(allObservations, 1);
 //		arma.printResult();
 		
 //		int[] p = {0,1,2,3,4,5};
