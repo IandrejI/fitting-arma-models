@@ -18,8 +18,9 @@ public class AR {
 	protected double[] psiHat;
 	protected double trainSSE;
 	protected double testSSE;
+	protected double trainMSE;
+	protected double testMSE;
 	protected double[] forecast;
-	protected double[] z;
 	
 	// Constructor for AR
 	public AR(int p) {
@@ -61,6 +62,8 @@ public class AR {
 			observations[i].setPrevPValues(prevPValues);
 		}
 	}
+	
+
 
 	// Method to create OLSData with array. Format: (y_1, x_11, x_12, ... ,x_1p, y_2, x_21, x_22,...,x2p,...)
 	protected void createOLSData(Observation[] observations){
@@ -110,22 +113,20 @@ public class AR {
 		*/
 		for(int i = p; i <observations.length; i++){
 			//invoke predict method
-			double pred = predict(observations[i]);
+			double pred = predict(observations[i], false);
 //			for(int j = 1; j <= p; j++) {
 //				pred += observations[i].getPrevPValues()[j-1]*psiHat[j-1];
 //			}
 //			for(int j = 0; j < p; j++) {
 //				pred += observations[i].getPrevPValues()[j]*psiHat[j];
 //			}
-		
-		
 			observations[i].setPrediction(pred);
 			observations[i].setError();
 		}
 	}
 	
 	//separate predict function, to calc predicted value based on prevPValues and PsiHat
-	protected double predict(Observation observation) {
+	protected double predict(Observation observation, Boolean AR) {
 		double pred = intercept;
 		for(int j = 0; j < p; j++) {
 			pred += observation.getPrevPValues()[j]*psiHat[j];
@@ -137,12 +138,16 @@ public class AR {
 	protected void calcSSE(Observation[] observations) {
 		trainSSE = 0;
 		testSSE = 0;
+		trainMSE = 0;
+		testMSE = 0;
 		for(int i = 0; i<nTrain; i++) {
 			trainSSE += observations[i].getError()*observations[i].getError();
 		}
+		trainMSE += trainSSE / nTrain;
 		for(int i = nTrain; i<observations.length; i++) {
 			testSSE += observations[i].getError()*observations[i].getError();
 		}
+		testMSE += testSSE / (observations.length-nTrain);
 	}
 
 	
@@ -155,6 +160,8 @@ public class AR {
 		System.out.format(format2, "Error", "Value");
 		System.out.format(format2, "Train SSE",trainSSE);
 		System.out.format(format2, "Test  SSE",testSSE+"\n");
+		System.out.format(format2, "Train MSE",trainMSE);
+		System.out.format(format2, "Test  MSE",testMSE+"\n");
 		System.out.format(format2, "Param.","Value");
 		System.out.format(format2, "c",intercept);
 		for(int i = 0; i<psiHat.length; i++) {
@@ -178,7 +185,7 @@ public class AR {
 			//set prev p values for all observations
 			setPrevPValues(observations);
 			//estimate forecast value by predicting the value for the new observation
-			double fct = predict(observations[observations.length - 1]);
+			double fct = predict(observations[observations.length - 1], false);
 			//set the resulting forecast value as value of the the observation
 			observations[observations.length - 1].setValue(fct);
 			//store result in fc array
@@ -224,14 +231,6 @@ public class AR {
 
 	public void setForecast(double[] forecast) {
 		this.forecast = forecast;
-	}
-
-	public double[] getZ() {
-		return z;
-	}
-
-	public void setZ(double[] z) {
-		this.z = z;
 	}
 
 	public double[] getData() {

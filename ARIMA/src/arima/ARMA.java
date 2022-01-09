@@ -19,10 +19,12 @@ public class ARMA extends AR {
 	public void newSampleData(Observation[] observations, double probTrain){
 		AR ar = new AR(p);
 		ar.newSampleData(observations, probTrain);
+		nTrain = (int) Math.round(probTrain*observations.length);
 		setMaxPQ();
+		setPrevZValues(observations);
 		setPrevQErrors(observations);
 		createOLSData(observations);
-		estPara(observations.length-maxPQ,p+q);
+		estPara(nTrain-maxPQ,p+q);
 		storePsiHat();
 		storeThetaHat();
 		setPrediction(observations);
@@ -47,6 +49,17 @@ public class ARMA extends AR {
 			}
 		}
 	}
+	
+	public void setPrevZValues(Observation[] observations) {
+		for (int i = q; i < observations.length; i++) {
+			double[] z = new double[q];
+			for (int j = 1; j <= q; j++) {
+				z[j - 1] = observations[i - j].getError();
+				observations[i].setZ(z);
+			}
+		}
+	}
+
 	
 	@Override
 	protected void createOLSData(Observation[] observations) {
@@ -79,20 +92,40 @@ public class ARMA extends AR {
 	
 	@Override
 	protected void setPrediction(Observation[] observations) {
-		for(int i = 0; i < maxPQ; i++){
-			observations[i].setError(0);
-		}
+//		for(int i = 0; i < maxPQ; i++){
+//			observations[i].setError(0);
+//		}
 		for(int i = maxPQ; i <observations.length; i++){
-			double pred = intercept;
-			for(int j = 1; j <= p; j++) {
-				pred += observations[i].getPrevPValues()[j-1]*psiHat[j-1];
-			}
-			for(int j = 1; j <= q; j++) {
-				pred += observations[i].getPrevQErrors()[j-1]*thetaHat[j-1];
-			}
+			double pred = predict(observations[i], false);
+//			double pred = intercept;
+//			for(int j = 1; j <= p; j++) {
+//				pred += observations[i].getPrevPValues()[j-1]*psiHat[j-1];
+//			}
+//			for(int j = 1; j <= q; j++) {
+//				pred += observations[i].getPrevQErrors()[j-1]*thetaHat[j-1];
+//			}
 		observations[i].setPrediction(pred);
 		observations[i].setError();
 		}
+	}
+	
+	@Override
+	//set AR = true if the prediction should be made based on the AR errors
+	protected double predict(Observation observation, Boolean AR) {
+		double pred = intercept;
+		for(int j = 0; j < p; j++) {
+			pred += observation.getPrevPValues()[j]*psiHat[j];
+		}
+		if(AR) {
+			for(int j = 0; j < q; j++) {
+				pred += observation.getZ()[j]*thetaHat[j];
+			}
+		} else {
+			for(int j = 0; j < q; j++) {
+				pred += observation.getPrevQErrors()[j]*thetaHat[j];
+			}
+		}	
+		return pred;
 	}
 	
 	@Override
@@ -121,30 +154,28 @@ public class ARMA extends AR {
 		//init. double array for h fc values
 		double[] fc = new double[h];
 		//iterate h times 
-		for(int i = 0; i < h; i++) {
-			//init. fc value with intercept
-			double fct = intercept;
-			//iterate through the parameters
-			for(int j = 0; j < p; j++) {
-				//multiply the last value with p1, the second last with p2, ... add to fc value
-				fct += observations[observations.length-1-j].getValue() * getPsiHat()[j];
-				System.out.println("p " + j +" "+ observations[observations.length-1-j].getValue());
-			}
-			for(int j = 0; j < q; j++) {
-				//multiply the last value with p1, the second last with p2, ... add to fc value
-				fct += getZ()[j] * getTetaHat()[j];
-				System.out.println("q " + j+ " " + observations[observations.length-1-j].getError());
-			}
-			//store result in fc array
-			fc[i] = fct;
-			//create new observation with the forecast value as value
-			Observation ob = new Observation(observations.length, fct);
+		for(int i = 0; i < h; i++) {	
+			//create new observation with value 0
+			Observation ob = new Observation(observations.length, 0);
 			//add new observation to LOCAL observation array only
 			observations = addObservation(observations, ob);
+			//set prev p values for all observations
+			setPrevPValues(observations);
+			setPrevZValues(observations);
+			System.out.println(observations[observations.length - 1].getPrevPValues()[0]);
+			System.out.println(observations[observations.length - 1].getZ()[0]);
+			//estimate forecast value by predicting the value for the new observation
+			double fct = predict(observations[observations.length - 1], true);
+			//set the resulting forecast value as value of the the observation
+			observations[observations.length - 1].setValue(fct);
+			//store result in fc array
+			fc[i] = fct;
 		}
 		//set fc value array as field forecast
 		forecast = fc;
 	}
+	
+	
 	
 	public double[] getPsiHat() {
 		return psiHat;
