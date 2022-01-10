@@ -176,7 +176,6 @@ public class AR {
 		for(int i = 0; i<psiHat.length; i++) {
 			System.out.format(format2, "AR"+(i+1),psiHat[i]);
 		}
-		System.out.print("\n");
 		/*
 		for(int i = 0; i<forecast.length; i++) {
 			System.out.format(format2, "Forecast"+(i+1),forecast[i]);
@@ -229,6 +228,7 @@ public class AR {
 				forecasts[i] = observations[observations.length - 1];
 			}
 			String format = "%1$-10s| %2$-10s| %3$-10s\n";	
+			System.out.print("\n");
 			System.out.format(format, "Forecast","Index","Prediction");
 			for(int i = 0; i<forecasts.length; i++) {
 				System.out.format(format, "h"+(i+1),forecasts[i].getIndex(),forecasts[i].getValue());

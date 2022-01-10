@@ -32,6 +32,13 @@ public class BruteForce {
 				}
 			}
 		}
+		if (trainProb == 1) {
+			System.out.println("\nMeasurement for order selection: Train SSE\nNumber of iterations = " 
+			+ p.length * q.length + "\nBest found Solution: p = " + bestFit.getP()+ ", q = " + bestFit.getQ());
+		} else {
+			System.out.println("\nMeasurement for order selection: Test SSE\nNumber of iterations = " 
+					+ p.length * q.length + "\nBest found Solution: p = " + bestFit.getP()+ ", q = " + bestFit.getQ());
+		}
 		return (bestFit);
 	}
 

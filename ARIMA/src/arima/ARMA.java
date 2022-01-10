@@ -159,7 +159,6 @@ public class ARMA extends AR {
 		for(int i = 0; i<thetaHat.length; i++) {
 			System.out.format(format2, "MA"+(i+1),thetaHat[i]);
 		}
-		System.out.print("\n");
 		/*
 		for(int i = 0; i<forecast.length; i++) {
 			System.out.format(format2, "Forecast"+(i+1),forecast[i]);
@@ -223,6 +222,7 @@ public class ARMA extends AR {
 			forecasts[i] = observations[observations.length - 1];
 		}
 		String format = "%1$-10s| %2$-10s| %3$-10s\n";	
+		System.out.print("\n");
 		System.out.format(format, "Forecast","Index","Prediction");
 		for(int i = 0; i<forecasts.length; i++) {
 			System.out.format(format, "h"+(i+1),forecasts[i].getIndex(),forecasts[i].getValue());
@@ -236,6 +236,15 @@ public class ARMA extends AR {
 	}
 	
 	
+	
+	public int getQ() {
+		return q;
+	}
+
+	public int getMaxPQ() {
+		return maxPQ;
+	}
+
 	public double[] getPsiHat() {
 		return psiHat;
 	}
