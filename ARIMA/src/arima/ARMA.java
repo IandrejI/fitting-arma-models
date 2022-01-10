@@ -240,7 +240,7 @@ public class ARMA extends AR {
 		return psiHat;
 	}
 
-	public double[] getTetaHat() {
+	public double[] getThetaHat() {
 		return thetaHat;
 	}
 
