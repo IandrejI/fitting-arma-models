@@ -14,20 +14,20 @@ public class Test {
 		
 		Observation[] allObservations = AR.createObsArray(values);
 		
-//		AR ar = new AR(2);
-//		ar.newSampleData(allObservations, 0.8);
-//		ar.forecast(allObservations, 2);
-//		ar.printResult();
+		AR ar = new AR(2);
+		ar.newSampleData(allObservations, 1);
+		ar.forecast(allObservations, 2);
+		ar.printResult();
 		
 		ARMA arma = new ARMA(2, 2);
-		arma.newSampleData(allObservations, 1.0);
+		arma.newSampleData(allObservations, 1);
 		arma.forecast(allObservations, 1);
 		arma.printResult();
 		
-//		int[] p = {0,1,2,3,4,5};
-//		int[] q = {0,1,2,3,4,5};
-//		
-//		ARMA finalModel = BruteForce.newARMAForce(allObservations, p, q);
-//		finalModel.printResult();
+		int[] p = {0,1,2,3,4,5};
+		int[] q = {0,1,2,3,4,5};	
+		ARMA finalModel = BruteForce.newARMAForce(allObservations, p, q, 0.95);
+		finalModel.forecast(allObservations, 1);
+		finalModel.printResult();
 	}
 }

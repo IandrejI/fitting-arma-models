@@ -28,7 +28,7 @@ public class ARMA extends AR {
 		storePsiHat();
 		storeThetaHat();
 		setPrediction(observations);
-		//calcSSE(observations);
+		calcSSE(observations);
 	}
 	
 
@@ -92,11 +92,11 @@ public class ARMA extends AR {
 	
 	@Override
 	protected void setPrediction(Observation[] observations) {
-//		for(int i = 0; i < maxPQ; i++){
-//			observations[i].setError(0);
-//		}
+		for(int i = 0; i < maxPQ; i++){
+		observations[i].setError(0);
+		}
 		for(int i = maxPQ; i <observations.length; i++){
-			double pred = predict(observations[i], false);
+			double pred = predict(observations[i]);
 //			double pred = intercept;
 //			for(int j = 1; j <= p; j++) {
 //				pred += observations[i].getPrevPValues()[j-1]*psiHat[j-1];
@@ -109,6 +109,8 @@ public class ARMA extends AR {
 		}
 	}
 	
+
+	/*
 	@Override
 	//set AR = true if the prediction should be made based on the AR errors
 	protected double predict(Observation observation, Boolean AR) {
@@ -127,14 +129,34 @@ public class ARMA extends AR {
 		}	
 		return pred;
 	}
+	*/
+	
+	@Override
+	//set AR = true if the prediction should be made based on the AR errors
+		protected double predict(Observation observation) {
+			double pred = intercept;
+			for(int j = 0; j < p; j++) {
+				pred += observation.getPrevPValues()[j]*psiHat[j];
+			}
+			for(int j = 0; j < q; j++) {
+				pred += observation.getPrevQErrors()[j]*thetaHat[j];
+			}
+			return pred;
+		}
+	
+	
 	
 	@Override
 	public void printResult() {
 		String format1 = "\n%1$-10s-%2$-10s-%3$-10s\n";
 		String format2 = "%1$-10s| %2$-10s\n";
 		System.out.format(format1,"----------" ,"Result: ARMA("+p+","+q+")","----------\n"); 
+		System.out.println("n = "+nTrain+"\n"); 
 		System.out.format(format2, "Error", "Value");
-		System.out.format(format2, "SSE",trainSSE+"\n");
+		System.out.format(format2, "Train SSE",trainSSE);
+		System.out.format(format2, "Test  SSE",testSSE);
+		System.out.format(format2, "Train MSE",trainMSE);
+		System.out.format(format2, "Test  MSE",testMSE+"\n");
 		System.out.format(format2, "Param.","Value");
 		System.out.format(format2, "c",intercept);
 		for(int i = 0; i<psiHat.length; i++) {
@@ -161,11 +183,15 @@ public class ARMA extends AR {
 			observations = addObservation(observations, ob);
 			//set prev p values for all observations
 			setPrevPValues(observations);
-			setPrevZValues(observations);
-			System.out.println(observations[observations.length - 1].getPrevPValues()[0]);
-			System.out.println(observations[observations.length - 1].getZ()[0]);
+			//setPrevZValues(observations);
+			setPrevQErrors(observations);
+			//System.out.println(observations[observations.length - 1].getPrevPValues()[0]);
+			//System.out.println(observations[observations.length - 1].getPrevPValues()[1]);
+			//System.out.println(observations[observations.length - 1].getZ()[0]);
+			//System.out.println(observations[observations.length - 1].getPrevQErrors()[0]);
+			//System.out.println(observations[observations.length - 1].getPrevQErrors()[1]);
 			//estimate forecast value by predicting the value for the new observation
-			double fct = predict(observations[observations.length - 1], true);
+			double fct = predict(observations[observations.length - 1]);
 			//set the resulting forecast value as value of the the observation
 			observations[observations.length - 1].setValue(fct);
 			//store result in fc array

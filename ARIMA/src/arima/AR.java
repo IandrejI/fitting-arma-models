@@ -113,7 +113,7 @@ public class AR {
 		*/
 		for(int i = p; i <observations.length; i++){
 			//invoke predict method
-			double pred = predict(observations[i], false);
+			double pred = predict(observations[i]);
 //			for(int j = 1; j <= p; j++) {
 //				pred += observations[i].getPrevPValues()[j-1]*psiHat[j-1];
 //			}
@@ -126,6 +126,8 @@ public class AR {
 	}
 	
 	//separate predict function, to calc predicted value based on prevPValues and PsiHat
+
+	/*
 	protected double predict(Observation observation, Boolean AR) {
 		double pred = intercept;
 		for(int j = 0; j < p; j++) {
@@ -133,6 +135,17 @@ public class AR {
 		}
 		return pred;
 	}
+	*/
+
+	protected double predict(Observation observation) {
+		double pred = intercept;
+		for(int j = 0; j < p; j++) {
+			pred += observation.getPrevPValues()[j]*psiHat[j];
+		}
+		return pred;
+	}
+	
+	
 	
 	
 	protected void calcSSE(Observation[] observations) {
@@ -143,11 +156,13 @@ public class AR {
 		for(int i = 0; i<nTrain; i++) {
 			trainSSE += observations[i].getError()*observations[i].getError();
 		}
-		trainMSE += trainSSE / nTrain;
+		trainMSE = trainSSE / nTrain;
 		for(int i = nTrain; i<observations.length; i++) {
 			testSSE += observations[i].getError()*observations[i].getError();
 		}
-		testMSE += testSSE / (observations.length-nTrain);
+		if(observations.length != nTrain) {
+		testMSE = testSSE / (observations.length-nTrain);
+		}
 	}
 
 	
@@ -157,9 +172,9 @@ public class AR {
 		String format2 = "%1$-10s| %2$-10s\n";
 		System.out.format(format1,"----------" ,"Result: AR("+p+")","----------"); 
 		System.out.println("n = "+nTrain+"\n"); 
-		System.out.format(format2, "Error", "Value");
+		System.out.format(format2, "Error", "Value\n");
 		System.out.format(format2, "Train SSE",trainSSE);
-		System.out.format(format2, "Test  SSE",testSSE+"\n");
+		System.out.format(format2, "Test  SSE",testSSE);
 		System.out.format(format2, "Train MSE",trainMSE);
 		System.out.format(format2, "Test  MSE",testMSE+"\n");
 		System.out.format(format2, "Param.","Value");
@@ -185,7 +200,7 @@ public class AR {
 			//set prev p values for all observations
 			setPrevPValues(observations);
 			//estimate forecast value by predicting the value for the new observation
-			double fct = predict(observations[observations.length - 1], false);
+			double fct = predict(observations[observations.length - 1]);
 			//set the resulting forecast value as value of the the observation
 			observations[observations.length - 1].setValue(fct);
 			//store result in fc array
