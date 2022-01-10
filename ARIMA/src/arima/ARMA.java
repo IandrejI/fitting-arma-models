@@ -21,7 +21,7 @@ public class ARMA extends AR {
 		ar.newSampleData(observations, probTrain);
 		nTrain = (int) Math.round(probTrain*observations.length);
 		setMaxPQ();
-		setPrevZValues(observations);
+		//setPrevZValues(observations);
 		setPrevQErrors(observations);
 		createOLSData(observations);
 		estPara(nTrain-maxPQ,p+q);
@@ -49,7 +49,7 @@ public class ARMA extends AR {
 			}
 		}
 	}
-	
+	/*
 	public void setPrevZValues(Observation[] observations) {
 		for (int i = q; i < observations.length; i++) {
 			double[] z = new double[q];
@@ -59,6 +59,8 @@ public class ARMA extends AR {
 			}
 		}
 	}
+	*/
+
 
 	
 	@Override
@@ -97,13 +99,6 @@ public class ARMA extends AR {
 		}
 		for(int i = maxPQ; i <observations.length; i++){
 			double pred = predict(observations[i]);
-//			double pred = intercept;
-//			for(int j = 1; j <= p; j++) {
-//				pred += observations[i].getPrevPValues()[j-1]*psiHat[j-1];
-//			}
-//			for(int j = 1; j <= q; j++) {
-//				pred += observations[i].getPrevQErrors()[j-1]*thetaHat[j-1];
-//			}
 		observations[i].setPrediction(pred);
 		observations[i].setError();
 		}
@@ -185,11 +180,13 @@ public class ARMA extends AR {
 			setPrevPValues(observations);
 			//setPrevZValues(observations);
 			setPrevQErrors(observations);
-			//System.out.println(observations[observations.length - 1].getPrevPValues()[0]);
-			//System.out.println(observations[observations.length - 1].getPrevPValues()[1]);
-			//System.out.println(observations[observations.length - 1].getZ()[0]);
-			//System.out.println(observations[observations.length - 1].getPrevQErrors()[0]);
-			//System.out.println(observations[observations.length - 1].getPrevQErrors()[1]);
+			/*
+			System.out.println(observations[observations.length - 1].getPrevPValues()[0]);
+			System.out.println(observations[observations.length - 1].getPrevPValues()[1]);
+			System.out.println(observations[observations.length - 1].getZ()[0]);
+			System.out.println(observations[observations.length - 1].getPrevQErrors()[0]);
+			System.out.println(observations[observations.length - 1].getPrevQErrors()[1]);
+			*/
 			//estimate forecast value by predicting the value for the new observation
 			double fct = predict(observations[observations.length - 1]);
 			//set the resulting forecast value as value of the the observation

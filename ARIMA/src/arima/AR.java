@@ -114,12 +114,6 @@ public class AR {
 		for(int i = p; i <observations.length; i++){
 			//invoke predict method
 			double pred = predict(observations[i]);
-//			for(int j = 1; j <= p; j++) {
-//				pred += observations[i].getPrevPValues()[j-1]*psiHat[j-1];
-//			}
-//			for(int j = 0; j < p; j++) {
-//				pred += observations[i].getPrevPValues()[j]*psiHat[j];
-//			}
 			observations[i].setPrediction(pred);
 			observations[i].setError();
 		}
