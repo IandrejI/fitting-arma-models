@@ -208,7 +208,7 @@ public class ARMA extends AR {
 		//iterate h times 
 		for(int i = 0; i < h; i++) {	
 			//create new observation with value 0
-			Observation ob = new Observation(observations.length, 0);
+			Observation ob = new Observation(observations.length+1, 0);
 			//add new observation to LOCAL observation array only
 			observations = addObservation(observations, ob);
 			//set prev p values for all observations
@@ -222,10 +222,10 @@ public class ARMA extends AR {
 			//store result in fc array
 			forecasts[i] = observations[observations.length - 1];
 		}
-		String format2 = "%1$-10s| %2$-10s\n";	
-		System.out.format(format2, "Forecast","Prediction");
+		String format = "%1$-10s| %2$-10s| %3$-10s\n";	
+		System.out.format(format, "Forecast","Index","Prediction");
 		for(int i = 0; i<forecasts.length; i++) {
-			System.out.format(format2, "h"+(i+1),forecasts[i].getValue());
+			System.out.format(format, "h"+(i+1),forecasts[i].getIndex(),forecasts[i].getValue());
 		}
 		//set fc value array as field forecast
 		if(all) {
