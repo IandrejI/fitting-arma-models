@@ -20,7 +20,7 @@ public class AR {
 	protected double testSSE;
 	protected double trainMSE;
 	protected double testMSE;
-	protected double[] forecast;
+	//protected double[] forecast;
 	
 	// Constructor for AR
 	public AR(int p) {
@@ -176,11 +176,16 @@ public class AR {
 		for(int i = 0; i<psiHat.length; i++) {
 			System.out.format(format2, "AR"+(i+1),psiHat[i]);
 		}
+		System.out.print("\n");
+		/*
 		for(int i = 0; i<forecast.length; i++) {
 			System.out.format(format2, "Forecast"+(i+1),forecast[i]);
 		}
+		*/
 	}
 	
+	/* Version 1 10.01.2022
+	 * 
 	//method to forecast the h next steps
 	public void forecast(Observation[] observations, int h) {
 		//init. double array for h fc values
@@ -203,6 +208,42 @@ public class AR {
 		//set fc value array as field forecast
 		forecast = fc;
 	}
+	*/
+	//method to forecast the h next steps
+		public Observation[] forecast(Observation[] observations, int h, boolean all) {
+			//init. double array for h fc values
+			Observation[] forecasts = new Observation[h];
+			//iterate h times 
+			for(int i = 0; i < h; i++) {	
+				//create new observation with value 0
+				Observation ob = new Observation(observations.length, 0);
+				//add new observation to LOCAL observation array only
+				observations = addObservation(observations, ob);
+				//set prev p values for all observations
+				setPrevPValues(observations);
+				//estimate forecast value by predicting the value for the new observation
+				double fct = predict(observations[observations.length - 1]);
+				//set the resulting forecast value as value of the the observation
+				observations[observations.length - 1].setValue(fct);
+				//store only forecasts
+				forecasts[i] = observations[observations.length - 1];
+			}
+			String format2 = "%1$-10s| %2$-10s\n";	
+			System.out.format(format2, "Forecast","Prediction");
+			for(int i = 0; i<forecasts.length; i++) {
+				System.out.format(format2, "h"+(i+1),forecasts[i].getValue());
+			}
+			//set fc value array as field forecast
+			if(all) {
+			return observations;
+			} else {
+				return(forecasts);
+			}
+			
+		}
+	
+	
+	
 	
 	//helper function, to add an observation to an array of observations and return the new array
 	protected static Observation[] addObservation(Observation[] observations, Observation newObservation) {
@@ -234,6 +275,7 @@ public class AR {
 		return psiHat;
 	}
 
+	/*
 	public double[] getForecast() {
 		return forecast;
 	}
@@ -241,6 +283,7 @@ public class AR {
 	public void setForecast(double[] forecast) {
 		this.forecast = forecast;
 	}
+	*/
 
 	public double[] getData() {
 		return data;

@@ -8,7 +8,6 @@ public class ARMA extends AR {
 	private int q;
 	private double[] thetaHat;
 	private int maxPQ;
-	private double[] forecast;
 
 	public ARMA(int p, int q) {
 		super(p);
@@ -160,11 +159,16 @@ public class ARMA extends AR {
 		for(int i = 0; i<thetaHat.length; i++) {
 			System.out.format(format2, "MA"+(i+1),thetaHat[i]);
 		}
+		System.out.print("\n");
+		/*
 		for(int i = 0; i<forecast.length; i++) {
 			System.out.format(format2, "Forecast"+(i+1),forecast[i]);
 		}
+		*/
 	}
 	
+	/*
+	Version 1 10.01.2022
 	@Override
 	//method to forecast the h next steps
 	public void forecast(Observation[] observations, int h) {
@@ -180,13 +184,11 @@ public class ARMA extends AR {
 			setPrevPValues(observations);
 			//setPrevZValues(observations);
 			setPrevQErrors(observations);
-			/*
 			System.out.println(observations[observations.length - 1].getPrevPValues()[0]);
 			System.out.println(observations[observations.length - 1].getPrevPValues()[1]);
 			System.out.println(observations[observations.length - 1].getZ()[0]);
 			System.out.println(observations[observations.length - 1].getPrevQErrors()[0]);
 			System.out.println(observations[observations.length - 1].getPrevQErrors()[1]);
-			*/
 			//estimate forecast value by predicting the value for the new observation
 			double fct = predict(observations[observations.length - 1]);
 			//set the resulting forecast value as value of the the observation
@@ -197,7 +199,41 @@ public class ARMA extends AR {
 		//set fc value array as field forecast
 		forecast = fc;
 	}
-	
+	*/
+	@Override
+	//method to forecast the h next steps
+	public Observation[] forecast(Observation[] observations, int h, boolean all) {
+		//init. double array for h fc values
+		Observation[] forecasts = new Observation[h];	
+		//iterate h times 
+		for(int i = 0; i < h; i++) {	
+			//create new observation with value 0
+			Observation ob = new Observation(observations.length, 0);
+			//add new observation to LOCAL observation array only
+			observations = addObservation(observations, ob);
+			//set prev p values for all observations
+			setPrevPValues(observations);
+			//setPrevZValues(observations);
+			setPrevQErrors(observations);
+			//estimate forecast value by predicting the value for the new observation
+			double fct = predict(observations[observations.length - 1]);
+			//set the resulting forecast value as value of the the observation
+			observations[observations.length - 1].setValue(fct);
+			//store result in fc array
+			forecasts[i] = observations[observations.length - 1];
+		}
+		String format2 = "%1$-10s| %2$-10s\n";	
+		System.out.format(format2, "Forecast","Prediction");
+		for(int i = 0; i<forecasts.length; i++) {
+			System.out.format(format2, "h"+(i+1),forecasts[i].getValue());
+		}
+		//set fc value array as field forecast
+		if(all) {
+			return observations;
+		} else {
+			return(forecasts);
+		}
+	}
 	
 	
 	public double[] getPsiHat() {
