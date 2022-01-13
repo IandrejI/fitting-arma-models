@@ -20,7 +20,6 @@ public class AR {
 	protected double testSSE;
 	protected double trainMSE;
 	protected double testMSE;
-	//protected double[] forecast;
 	
 	// Constructor for AR
 	public AR(int p) {
@@ -121,15 +120,6 @@ public class AR {
 	
 	//separate predict function, to calc predicted value based on prevPValues and PsiHat
 
-	/*
-	protected double predict(Observation observation, Boolean AR) {
-		double pred = intercept;
-		for(int j = 0; j < p; j++) {
-			pred += observation.getPrevPValues()[j]*psiHat[j];
-		}
-		return pred;
-	}
-	*/
 
 	protected double predict(Observation observation) {
 		double pred = intercept;
@@ -183,31 +173,7 @@ public class AR {
 		*/
 	}
 	
-	/* Version 1 10.01.2022
-	 * 
-	//method to forecast the h next steps
-	public void forecast(Observation[] observations, int h) {
-		//init. double array for h fc values
-		double[] fc = new double[h];
-		//iterate h times 
-		for(int i = 0; i < h; i++) {	
-			//create new observation with value 0
-			Observation ob = new Observation(observations.length, 0);
-			//add new observation to LOCAL observation array only
-			observations = addObservation(observations, ob);
-			//set prev p values for all observations
-			setPrevPValues(observations);
-			//estimate forecast value by predicting the value for the new observation
-			double fct = predict(observations[observations.length - 1]);
-			//set the resulting forecast value as value of the the observation
-			observations[observations.length - 1].setValue(fct);
-			//store result in fc array
-			fc[i] = fct;
-		}
-		//set fc value array as field forecast
-		forecast = fc;
-	}
-	*/
+
 	//method to forecast the h next steps
 		public Observation[] forecast(Observation[] observations, int h, boolean all) {
 			//init. double array for h fc values
@@ -274,16 +240,6 @@ public class AR {
 	public double[] getPsiHat() {
 		return psiHat;
 	}
-
-	/*
-	public double[] getForecast() {
-		return forecast;
-	}
-
-	public void setForecast(double[] forecast) {
-		this.forecast = forecast;
-	}
-	*/
 
 	public double[] getData() {
 		return data;

@@ -20,7 +20,6 @@ public class ARMA extends AR {
 		ar.newSampleData(observations, probTrain);
 		nTrain = (int) Math.round(probTrain*observations.length);
 		setMaxPQ();
-		//setPrevZValues(observations);
 		setPrevQErrors(observations);
 		createOLSData(observations);
 		estPara(nTrain-maxPQ,p+q);
@@ -48,17 +47,6 @@ public class ARMA extends AR {
 			}
 		}
 	}
-	/*
-	public void setPrevZValues(Observation[] observations) {
-		for (int i = q; i < observations.length; i++) {
-			double[] z = new double[q];
-			for (int j = 1; j <= q; j++) {
-				z[j - 1] = observations[i - j].getError();
-				observations[i].setZ(z);
-			}
-		}
-	}
-	*/
 
 
 	
@@ -104,26 +92,6 @@ public class ARMA extends AR {
 	}
 	
 
-	/*
-	@Override
-	//set AR = true if the prediction should be made based on the AR errors
-	protected double predict(Observation observation, Boolean AR) {
-		double pred = intercept;
-		for(int j = 0; j < p; j++) {
-			pred += observation.getPrevPValues()[j]*psiHat[j];
-		}
-		if(AR) {
-			for(int j = 0; j < q; j++) {
-				pred += observation.getZ()[j]*thetaHat[j];
-			}
-		} else {
-			for(int j = 0; j < q; j++) {
-				pred += observation.getPrevQErrors()[j]*thetaHat[j];
-			}
-		}	
-		return pred;
-	}
-	*/
 	
 	@Override
 	//set AR = true if the prediction should be made based on the AR errors
@@ -166,39 +134,6 @@ public class ARMA extends AR {
 		*/
 	}
 	
-	/*
-	Version 1 10.01.2022
-	@Override
-	//method to forecast the h next steps
-	public void forecast(Observation[] observations, int h) {
-		//init. double array for h fc values
-		double[] fc = new double[h];
-		//iterate h times 
-		for(int i = 0; i < h; i++) {	
-			//create new observation with value 0
-			Observation ob = new Observation(observations.length, 0);
-			//add new observation to LOCAL observation array only
-			observations = addObservation(observations, ob);
-			//set prev p values for all observations
-			setPrevPValues(observations);
-			//setPrevZValues(observations);
-			setPrevQErrors(observations);
-			System.out.println(observations[observations.length - 1].getPrevPValues()[0]);
-			System.out.println(observations[observations.length - 1].getPrevPValues()[1]);
-			System.out.println(observations[observations.length - 1].getZ()[0]);
-			System.out.println(observations[observations.length - 1].getPrevQErrors()[0]);
-			System.out.println(observations[observations.length - 1].getPrevQErrors()[1]);
-			//estimate forecast value by predicting the value for the new observation
-			double fct = predict(observations[observations.length - 1]);
-			//set the resulting forecast value as value of the the observation
-			observations[observations.length - 1].setValue(fct);
-			//store result in fc array
-			fc[i] = fct;
-		}
-		//set fc value array as field forecast
-		forecast = fc;
-	}
-	*/
 	@Override
 	//method to forecast the h next steps
 	public Observation[] forecast(Observation[] observations, int h, boolean all) {

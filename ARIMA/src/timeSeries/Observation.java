@@ -7,7 +7,6 @@ public class Observation {
 	private double value;
 	private double prediction;
 	private double error = 0;
-	//private double[] z;
 	private double[] prevPValues;
 	private double[] prevQErrors;
 	
@@ -73,21 +72,6 @@ public class Observation {
 	public void setPrevQErrors(double[] prevQErrors) {
 		this.prevQErrors = prevQErrors;
 	}
-
-/*
-	public double[] getZ() {
-		return z;
-	}
-
-
-	public void setZ(double[] z) {
-		this.z = z;
-	}
-*/
-
-
-	
-	
 	
 
 }

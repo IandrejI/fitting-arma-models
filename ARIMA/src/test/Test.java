@@ -28,9 +28,8 @@ public class Test {
 		
 		int[] p = {0,1,2,3,4,5};
 		int[] q = {0,1,2,3,4,5};	
-		ARMA finalModel = BruteForce.newARMAForce(allObservations, p, q, 0.95);
+		ARMA finalModel = BruteForce.newARMAForce(allObservations, p, q, 1);
 		finalModel.printResult();
-		Observation[] forecasts3 = finalModel.forecast(allObservations, 5, false);
-		System.out.println(forecasts3[0].getValue());
+		finalModel.forecast(allObservations, 5, false);
 	}
 }
