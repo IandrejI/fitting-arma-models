@@ -82,12 +82,12 @@ public class ARMA extends AR {
 	@Override
 	protected void setPrediction(Observation[] observations) {
 		for(int i = 0; i < maxPQ; i++){
-		observations[i].setError(0);
+			observations[i].setError(0);
 		}
 		for(int i = maxPQ; i <observations.length; i++){
 			double pred = predict(observations[i]);
-		observations[i].setPrediction(pred);
-		observations[i].setError();
+			observations[i].setPrediction(pred);
+			observations[i].setError();
 		}
 	}
 	
@@ -122,7 +122,7 @@ public class ARMA extends AR {
 		System.out.format(format2, "Param.","Value");
 		System.out.format(format2, "c",intercept);
 		for(int i = 0; i<psiHat.length; i++) {
-		System.out.format(format2, "AR"+(i+1),psiHat[i]);
+			System.out.format(format2, "AR"+(i+1),psiHat[i]);
 		}
 		for(int i = 0; i<thetaHat.length; i++) {
 			System.out.format(format2, "MA"+(i+1),thetaHat[i]);

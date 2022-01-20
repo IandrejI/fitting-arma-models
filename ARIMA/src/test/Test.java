@@ -30,6 +30,13 @@ public class Test {
 		int[] q = {0,1,2,3,4,5};	
 		ARMA finalModel = BruteForce.newARMAForce(allObservations, p, q, 1);
 		finalModel.printResult();
-		finalModel.forecast(allObservations, 5, false);
+		Observation[] f = finalModel.forecast(allObservations, 5, false);
+		
+		/*
+		for(int i = 0; i < f.length; i++) {
+			System.out.println(f[i].getValue());
+		}
+		*/
+		
 	}
 }
