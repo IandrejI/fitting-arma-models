@@ -15,17 +15,17 @@ public class ARMA extends AR {
 	}
 	
 	@Override
-	public void newSampleData(Observation[] observations, double probTrain){
+	public void fitModel(Observation[] observations, double probTrain){
 		AR ar = new AR(p);
-		ar.newSampleData(observations, probTrain);
+		ar.fitModel(observations, probTrain);
 		nTrain = (int) Math.round(probTrain*observations.length);
 		setMaxPQ();
 		setPrevQErrors(observations);
 		createOLSData(observations);
 		estPara(nTrain-maxPQ,p+q);
-		storePsiHat();
+		storePhiHat();
 		storeThetaHat();
-		setPrediction(observations);
+		storePrediction(observations);
 		calcSSE(observations);
 	}
 	
@@ -80,7 +80,7 @@ public class ARMA extends AR {
 	}
 	
 	@Override
-	protected void setPrediction(Observation[] observations) {
+	protected void storePrediction(Observation[] observations) {
 		for(int i = 0; i < maxPQ; i++){
 			observations[i].setError(0);
 		}
@@ -98,7 +98,7 @@ public class ARMA extends AR {
 		protected double predict(Observation observation) {
 			double pred = intercept;
 			for(int j = 0; j < p; j++) {
-				pred += observation.getPrevPValues()[j]*psiHat[j];
+				pred += observation.getPrevPValues()[j]*phiHat[j];
 			}
 			for(int j = 0; j < q; j++) {
 				pred += observation.getPrevQErrors()[j]*thetaHat[j];
@@ -121,8 +121,8 @@ public class ARMA extends AR {
 		System.out.format(format2, "Test  MSE",testMSE+"\n");
 		System.out.format(format2, "Param.","Value");
 		System.out.format(format2, "c",intercept);
-		for(int i = 0; i<psiHat.length; i++) {
-			System.out.format(format2, "AR"+(i+1),psiHat[i]);
+		for(int i = 0; i<phiHat.length; i++) {
+			System.out.format(format2, "AR"+(i+1),phiHat[i]);
 		}
 		for(int i = 0; i<thetaHat.length; i++) {
 			System.out.format(format2, "MA"+(i+1),thetaHat[i]);
@@ -180,8 +180,8 @@ public class ARMA extends AR {
 		return maxPQ;
 	}
 
-	public double[] getPsiHat() {
-		return psiHat;
+	public double[] getPhiHat() {
+		return phiHat;
 	}
 
 	public double[] getThetaHat() {

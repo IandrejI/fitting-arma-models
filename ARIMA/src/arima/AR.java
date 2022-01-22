@@ -15,7 +15,7 @@ public class AR {
 	protected int nTrain;
 	protected double[] estPara;
 	protected double intercept;
-	protected double[] psiHat;
+	protected double[] phiHat;
 	protected double trainSSE;
 	protected double testSSE;
 	protected double trainMSE;
@@ -27,25 +27,25 @@ public class AR {
 	}
 	
 	// Wrapper-Method for new AR-Model
-	public void newSampleData(Observation[] observations, double probTrain) {
+	public void fitModel(Observation[] observations, double probTrain) {
 		this.nTrain = (int) Math.round(probTrain*observations.length);
 		setPrevPValues(observations);
 		createOLSData(observations);
 		estPara(nTrain-p,p);
-		storePsiHat();
-		setPrediction(observations);
+		storePhiHat();
+		storePrediction(observations);
 		calcSSE(observations);
 	}
 	
 	
-	// Method to create observation array out of array of doubles
-	public static Observation[] createObsArray(double[] values) {
-		Observation[] observations = new Observation[values.length];
-		for(int i = 0; i<values.length; i++) {
-			observations[i] = new Observation(i, values[i]);
-		}
-		return observations;
-	}
+//	// Method to create observation array out of array of doubles
+//	public static Observation[] createObsArray(double[] values) {
+//		Observation[] observations = new Observation[values.length];
+//		for(int i = 0; i<values.length; i++) {
+//			observations[i] = new Observation(i, values[i]);
+//		}
+//		return observations;
+//	}
 	
 
 	// Set p previous observation values for every Observation there t>p
@@ -95,17 +95,17 @@ public class AR {
 		//trainSSE = OLS.calculateResidualSumOfSquares();
 	}
 	
-	// Store estimate for psi and intercept 
-	protected void storePsiHat(){
-		psiHat = new double[p];
+	// Store estimate for phi and intercept 
+	protected void storePhiHat(){
+		phiHat = new double[p];
 		intercept = estPara[0];
 		for(int i = 1; i<=p; i++) {
-			psiHat[i-1] = estPara[i];
+			phiHat[i-1] = estPara[i];
 		}
 	}
 	
 	// Method to set prediction and errors for every observation 
-	protected void setPrediction(Observation[] observations) {
+	protected void storePrediction(Observation[] observations) {
 		/*for(int i = 0; i < p; i++){
 			observations[i].setError(0);
 		}
@@ -124,14 +124,11 @@ public class AR {
 	protected double predict(Observation observation) {
 		double pred = intercept;
 		for(int j = 0; j < p; j++) {
-			pred += observation.getPrevPValues()[j]*psiHat[j];
+			pred += observation.getPrevPValues()[j]*phiHat[j];
 		}
 		return pred;
 	}
-	
-	
-	
-	
+
 	protected void calcSSE(Observation[] observations) {
 		trainSSE = 0;
 		testSSE = 0;
@@ -163,8 +160,8 @@ public class AR {
 		System.out.format(format2, "Test  MSE",testMSE+"\n");
 		System.out.format(format2, "Param.","Value");
 		System.out.format(format2, "c",intercept);
-		for(int i = 0; i<psiHat.length; i++) {
-			System.out.format(format2, "AR"+(i+1),psiHat[i]);
+		for(int i = 0; i<phiHat.length; i++) {
+			System.out.format(format2, "AR"+(i+1),phiHat[i]);
 		}
 		/*
 		for(int i = 0; i<forecast.length; i++) {
@@ -237,8 +234,8 @@ public class AR {
 		return intercept;
 	}
 
-	public double[] getPsiHat() {
-		return psiHat;
+	public double[] getPhiHat() {
+		return phiHat;
 	}
 
 	public double[] getData() {

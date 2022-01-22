@@ -26,7 +26,7 @@ public class BruteForce {
 				// new ARMA with p[i] and q[i]
 				ARMA currentFit = new ARMA(p[i], q[j]);
 				// newSampleData with Observation[] and trainProb
-				currentFit.newSampleData(observations, trainProb);
+				currentFit.fitModel(observations, trainProb);
 				// At the start set bestFit = currentFit or if current fit train SSE < best fir train SSE set bestFit = currentFit
 				if (bestFit == null || currentFit.getTrainSSE() < bestFit.getTrainSSE()) {
 					bestFit = currentFit;
@@ -51,7 +51,7 @@ public class BruteForce {
 				// new ARMA with p[i] and q[i]
 				ARMA currentFit = new ARMA(p[i], q[j]);
 				// newSampleData with Observation[] and trainProb
-				currentFit.newSampleData(observations, trainProb);
+				currentFit.fitModel(observations, trainProb);
 				// At the start set bestFit = currentFit or if current fit test SSE < best fir test SSE set bestFit = currentFit
 				if (bestFit == null || currentFit.getTestSSE() < bestFit.getTestSSE()) {
 					bestFit = currentFit;
