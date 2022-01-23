@@ -9,7 +9,7 @@ import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 
 public class AR {
 	
-	//Fields
+	// Fields
 	protected int p;
 	protected double[] data;
 	protected int nTrain;
@@ -36,16 +36,6 @@ public class AR {
 		storePrediction(observations);
 		calcSSE(observations);
 	}
-	
-	
-//	// Method to create observation array out of array of doubles
-//	public static Observation[] createObsArray(double[] values) {
-//		Observation[] observations = new Observation[values.length];
-//		for(int i = 0; i<values.length; i++) {
-//			observations[i] = new Observation(i, values[i]);
-//		}
-//		return observations;
-//	}
 	
 
 	// Set p previous observation values for every Observation there t>p
@@ -83,7 +73,7 @@ public class AR {
 		}
 	}
 	
-	
+	// Method to invoke ols-regression
 	protected void estPara(int numObs, int numPara) {
 
 		// New Multiple Linear Regression Model, solve with OLS.
@@ -106,10 +96,6 @@ public class AR {
 	
 	// Method to set prediction and errors for every observation 
 	protected void storePrediction(Observation[] observations) {
-		/*for(int i = 0; i < p; i++){
-			observations[i].setError(0);
-		}
-		*/
 		for(int i = p; i <observations.length; i++){
 			//invoke predict method
 			double pred = predict(observations[i]);
@@ -119,8 +105,6 @@ public class AR {
 	}
 	
 	//separate predict function, to calc predicted value based on prevPValues and PsiHat
-
-
 	protected double predict(Observation observation) {
 		double pred = intercept;
 		for(int j = 0; j < p; j++) {
@@ -129,6 +113,7 @@ public class AR {
 		return pred;
 	}
 
+	// Method to calculate the error measurements
 	protected void calcSSE(Observation[] observations) {
 		trainSSE = 0;
 		testSSE = 0;
@@ -163,15 +148,10 @@ public class AR {
 		for(int i = 0; i<phiHat.length; i++) {
 			System.out.format(format2, "AR"+(i+1),phiHat[i]);
 		}
-		/*
-		for(int i = 0; i<forecast.length; i++) {
-			System.out.format(format2, "Forecast"+(i+1),forecast[i]);
-		}
-		*/
 	}
 	
 
-	//method to forecast the h next steps
+	// Method to forecast the h next steps
 		public Observation[] forecast(Observation[] observations, int h, boolean all) {
 			//init. double array for h fc values
 			Observation[] forecasts = new Observation[h];
@@ -208,7 +188,7 @@ public class AR {
 	
 	
 	
-	//helper function, to add an observation to an array of observations and return the new array
+	// Helper function, to add an observation to an array of observations and return the new array
 	protected static Observation[] addObservation(Observation[] observations, Observation newObservation) {
 		ArrayList<Observation> observationList = new ArrayList<Observation>(Arrays.asList(observations));
 		observationList.add(newObservation);
@@ -218,6 +198,7 @@ public class AR {
 	}
 	
 
+	// Getters
 	public int getP() {
 		return p;
 	}

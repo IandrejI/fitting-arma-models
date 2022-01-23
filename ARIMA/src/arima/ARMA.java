@@ -15,6 +15,7 @@ public class ARMA extends AR {
 	}
 	
 	@Override
+	// Wrapper Method ARMA 
 	public void fitModel(Observation[] observations, double probTrain){
 		AR ar = new AR(p);
 		ar.fitModel(observations, probTrain);
@@ -29,7 +30,7 @@ public class ARMA extends AR {
 		calcSSE(observations);
 	}
 	
-
+	// Method to set max p,q
 	private void setMaxPQ() {
 		if (p > q) {
 			maxPQ = p;
@@ -37,7 +38,8 @@ public class ARMA extends AR {
 			maxPQ = q;
 		}
 	}
-
+	
+	// Method to set the prev. q errors in the observation array
 	public void setPrevQErrors(Observation[] observations) {
 		for (int i = q; i < observations.length; i++) {
 			double[] prevQErrors = new double[q];
@@ -51,6 +53,7 @@ public class ARMA extends AR {
 
 	
 	@Override
+	// Consider the prev. q errors
 	protected void createOLSData(Observation[] observations) {
 		// Init. new double data array with length (n-p)*(p+q+1)
 		data = new double[(nTrain-maxPQ)*(p+q+1)];
@@ -71,7 +74,7 @@ public class ARMA extends AR {
 		}
 	}
 	
-	
+	// Method to store ThetaHat
 	private void storeThetaHat() {
 		thetaHat = new double[q];
 		for(int i = p+1; i<=p+q; i++) {
@@ -80,6 +83,7 @@ public class ARMA extends AR {
 	}
 	
 	@Override
+	// Added to set for i < maxPQ errors to 0
 	protected void storePrediction(Observation[] observations) {
 		for(int i = 0; i < maxPQ; i++){
 			observations[i].setError(0);
@@ -94,7 +98,7 @@ public class ARMA extends AR {
 
 	
 	@Override
-	//set AR = true if the prediction should be made based on the AR errors
+		// Consider the prev. p values and q errors
 		protected double predict(Observation observation) {
 			double pred = intercept;
 			for(int j = 0; j < p; j++) {
@@ -109,6 +113,7 @@ public class ARMA extends AR {
 	
 	
 	@Override
+	// Added printing of MA parameters
 	public void printResult() {
 		String format1 = "\n%1$-10s-%2$-10s-%3$-10s\n";
 		String format2 = "%1$-10s| %2$-10s\n";
@@ -127,15 +132,10 @@ public class ARMA extends AR {
 		for(int i = 0; i<thetaHat.length; i++) {
 			System.out.format(format2, "MA"+(i+1),thetaHat[i]);
 		}
-		/*
-		for(int i = 0; i<forecast.length; i++) {
-			System.out.format(format2, "Forecast"+(i+1),forecast[i]);
-		}
-		*/
 	}
 	
 	@Override
-	//method to forecast the h next steps
+	// Method to forecast the h next steps
 	public Observation[] forecast(Observation[] observations, int h, boolean all) {
 		//init. double array for h fc values
 		Observation[] forecasts = new Observation[h];	
@@ -147,7 +147,7 @@ public class ARMA extends AR {
 			observations = addObservation(observations, ob);
 			//set prev p values for all observations
 			setPrevPValues(observations);
-			//setPrevZValues(observations);
+			//setPrevQErrors(observations);
 			setPrevQErrors(observations);
 			//estimate forecast value by predicting the value for the new observation
 			double fct = predict(observations[observations.length - 1]);
@@ -171,7 +171,7 @@ public class ARMA extends AR {
 	}
 	
 	
-	
+	// Getters
 	public int getQ() {
 		return q;
 	}

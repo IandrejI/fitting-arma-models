@@ -1,6 +1,6 @@
 package timeSeries;
 
-public class Utils {
+public class TimeSeriesUtils {
 
 	// Method to create observation array out of array of doubles
 	public static Observation[] createObsArray(double[] values) {
