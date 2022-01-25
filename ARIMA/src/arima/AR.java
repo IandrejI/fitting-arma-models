@@ -7,6 +7,12 @@ import java.util.Arrays;
 
 import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 
+/**
+ * Class to solve an AR-Model using a linear regression
+ * @author Christoph Barkey 
+ * @author Andrej Muschke
+ *
+ */
 public class AR {
 	
 	// Fields
@@ -21,12 +27,19 @@ public class AR {
 	protected double trainMSE;
 	protected double testMSE;
 	
-	// Constructor for AR
+	/**
+	 * Constructor for an AR-Model. Only uses p as input.
+	 * @param p order p for AR polynomial
+	 */
 	public AR(int p) {
 		this.p = p;
 	}
 	
-	// Wrapper-Method for new AR-Model
+	/**
+	 * Wrapper function that includes data preparation steps, parameter estimations and evaluation.
+	 * @param observations array of observations
+	 * @param probTrain probability of training data [0,1]
+	 */
 	public void fitModel(Observation[] observations, double probTrain) {
 		this.nTrain = (int) Math.round(probTrain*observations.length);
 		setPrevPValues(observations);
@@ -38,7 +51,10 @@ public class AR {
 	}
 	
 
-	// Set p previous observation values for every Observation there t>p
+	/**
+	 * Set p previous observation values for every Observation there t>p
+	 * @param observations
+	 */
 	protected void setPrevPValues(Observation[] observations) {
 		// starting with i = p
 		for(int i = p; i < observations.length; i++) {
@@ -54,7 +70,11 @@ public class AR {
 	
 
 
-	// Method to create OLSData with array. Format: (y_1, x_11, x_12, ... ,x_1p, y_2, x_21, x_22,...,x2p,...)
+	/**
+	 *  Method to create OLSData-array. Considering prevPValues.
+	 *  Format: (y_1, x_11, x_12, ... ,x_1p, y_n, x_n1, x_n2,...,x_np)
+	 * @param observations array of observations
+	 */
 	protected void createOLSData(Observation[] observations){
 		// Init. new double data array with length (n-p)*(p+1)
 		data = new double[(nTrain-p)*(p+1)];
@@ -73,7 +93,11 @@ public class AR {
 		}
 	}
 	
-	// Method to invoke ols-regression
+	/**
+	 * Takes the previously created input data from data, estimates the regression parameters, and stores them into estPara
+	 * @param numObs number of observations
+	 * @param numPara number of parameters
+	 */
 	protected void estPara(int numObs, int numPara) {
 
 		// New Multiple Linear Regression Model, solve with OLS.
@@ -85,7 +109,9 @@ public class AR {
 		//trainSSE = OLS.calculateResidualSumOfSquares();
 	}
 	
-	// Store estimate for phi and intercept 
+	/**
+	 * Stores the intercept and AR parameters separately into the respective fields intercept and phiHat 
+	 */
 	protected void storePhiHat(){
 		phiHat = new double[p];
 		intercept = estPara[0];
@@ -94,7 +120,11 @@ public class AR {
 		}
 	}
 	
-	// Method to set prediction and errors for every observation 
+	/**
+	 * Creates actual predictions and stores them into the respective field prediction. 
+	 * Then setError is invoked, calculating, and storing the results in error
+	 * @param observations array of observations
+	 */
 	protected void storePrediction(Observation[] observations) {
 		for(int i = p; i <observations.length; i++){
 			//invoke predict method
@@ -104,7 +134,11 @@ public class AR {
 		}
 	}
 	
-	//separate predict function, to calc predicted value based on prevPValues and PsiHat
+	/**
+	 * Separate predict function, to calculate predicted value based on prevPValues and PsiHat
+	 * @param observation array of observations
+	 * @return predicted value for observation
+	 */
 	protected double predict(Observation observation) {
 		double pred = intercept;
 		for(int j = 0; j < p; j++) {
@@ -113,7 +147,11 @@ public class AR {
 		return pred;
 	}
 
-	// Method to calculate the error measurements
+	/**
+	 * Method to calculate the error measurements.
+	 * train/test SSE/MSE
+	 * @param observations array of observations
+	 */
 	protected void calcSSE(Observation[] observations) {
 		trainSSE = 0;
 		testSSE = 0;
@@ -132,7 +170,10 @@ public class AR {
 	}
 
 	
-	// Method for printing Results 
+	/**
+	 * Method to print the relevant data of an AR model. 
+	 * Prints the order p, n, the parameter values and the model performance measures
+	 */
 	public void printResult() {
 		String format1 = "\n%1$-10s-%2$-10s-%3$-10s\n";
 		String format2 = "%1$-10s| %2$-10s\n";
@@ -151,7 +192,15 @@ public class AR {
 	}
 	
 
-	// Method to forecast the h next steps
+	/**
+	 *  Method to forecast the h next steps
+	 *  Creates forecast values and prints them directly. 
+	 *  The user can decide if he/she  wants to store all observations or only the forecasts.
+	 * @param observations array of Observations
+	 * @param h periods to forecast 
+	 * @param all if true -> return observation + forecasts
+	 * @return forecast  or observations + forecasts
+	 */
 		public Observation[] forecast(Observation[] observations, int h, boolean all) {
 			//init. double array for h fc values
 			Observation[] forecasts = new Observation[h];
@@ -178,7 +227,7 @@ public class AR {
 			}
 			//set fc value array as field forecast
 			if(all) {
-			return observations;
+				return observations;
 			} else {
 				return(forecasts);
 			}
@@ -188,7 +237,12 @@ public class AR {
 	
 	
 	
-	// Helper function, to add an observation to an array of observations and return the new array
+	/**
+	 * Helper function, to add an observation to an array of observations and return the new array.
+	 * @param observations array of Observations
+	 * @param newObservation observation to add
+	 * @return enhanced array of observations
+	 */
 	protected static Observation[] addObservation(Observation[] observations, Observation newObservation) {
 		ArrayList<Observation> observationList = new ArrayList<Observation>(Arrays.asList(observations));
 		observationList.add(newObservation);

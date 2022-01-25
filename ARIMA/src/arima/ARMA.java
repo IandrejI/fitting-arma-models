@@ -3,19 +3,41 @@ package arima;
 
 import timeSeries.Observation;
 
+/**
+ * Class to solve an ARMA-Model using a linear regression.
+ * First solving the AR part of the model and subsequently solving the MA part,
+ * both with an OLS regression, minimizing the sum of squared errors.
+ * By solving the AR part, we obtain the p parameter values and with these we can calculate 
+ * the predicted values and thus the residuals for all observations.
+ * @author Christoph Barkey 
+ * @author Andrej Muschke
+ *
+ */
+
 public class ARMA extends AR {
+	
 	// Fields
 	private int q;
 	private double[] thetaHat;
 	private int maxPQ;
-
+	
+	/**
+	 * Constructor for an ARMA-Model. Only uses p and q as input.
+	 * @param p order p for AR polynomial
+	 * @param q order q for MA polynomial
+	 */
 	public ARMA(int p, int q) {
 		super(p);
 		this.q = q;
 	}
 	
 	@Override
-	// Wrapper Method ARMA 
+	/**
+	 * Wrapper function that includes data preparation steps, parameter estimations and evaluation.
+	 * Invokes a new AR-Model at the beginning to set errors.
+	 * @param observations array of observations
+	 * @param probTrain probability of training data [0,1]
+	 */ 
 	public void fitModel(Observation[] observations, double probTrain){
 		AR ar = new AR(p);
 		ar.fitModel(observations, probTrain);
@@ -30,7 +52,9 @@ public class ARMA extends AR {
 		calcSSE(observations);
 	}
 	
-	// Method to set max p,q
+	/**
+	 * Method to store the max(p,q) value
+	 */
 	private void setMaxPQ() {
 		if (p > q) {
 			maxPQ = p;
@@ -39,7 +63,10 @@ public class ARMA extends AR {
 		}
 	}
 	
-	// Method to set the prev. q errors in the observation array
+	/**
+	 * Method to allocate the previous q errors to all observations
+	 * @param observations array of observations
+	 */
 	public void setPrevQErrors(Observation[] observations) {
 		for (int i = q; i < observations.length; i++) {
 			double[] prevQErrors = new double[q];
@@ -53,7 +80,11 @@ public class ARMA extends AR {
 
 	
 	@Override
-	// Consider the prev. q errors
+	/**
+	 *  Method to create OLSData-array. Considering prevPValues and prevQErrors.
+	 *  Format: (y_1, x_11, x_12, ... ,x_1p, y_n, x_n1, x_n2,...,x_np)
+	 * @param observations array of observations
+	 */
 	protected void createOLSData(Observation[] observations) {
 		// Init. new double data array with length (n-p)*(p+q+1)
 		data = new double[(nTrain-maxPQ)*(p+q+1)];
@@ -74,7 +105,9 @@ public class ARMA extends AR {
 		}
 	}
 	
-	// Method to store ThetaHat
+	/**
+	 * Method to stores the MA parameters into the field thetaHat
+	 */
 	private void storeThetaHat() {
 		thetaHat = new double[q];
 		for(int i = p+1; i<=p+q; i++) {
@@ -83,7 +116,12 @@ public class ARMA extends AR {
 	}
 	
 	@Override
-	// Added to set for i < maxPQ errors to 0
+	/**
+	 * Creates actual predictions and stores them into the respective field prediction. 
+	 * Then setError is invoked, calculating, and storing the results in error
+	 * Considering maxPQ as boundaries and set error to 0 for i < maxPQ
+	 * @param observations array of observations
+	 */
 	protected void storePrediction(Observation[] observations) {
 		for(int i = 0; i < maxPQ; i++){
 			observations[i].setError(0);
@@ -98,7 +136,12 @@ public class ARMA extends AR {
 
 	
 	@Override
-		// Consider the prev. p values and q errors
+	/**
+	 * Separate predict function, to calculate predicted value based on prevPValues and PsiHat
+	 and prevQErrors and thetaHat.
+	 * @param observation array of observations
+	 * @return predicted value for observation
+	 */
 		protected double predict(Observation observation) {
 			double pred = intercept;
 			for(int j = 0; j < p; j++) {
@@ -113,7 +156,10 @@ public class ARMA extends AR {
 	
 	
 	@Override
-	// Added printing of MA parameters
+	/**
+	 * Method to print the relevant data of an ARMA model. 
+	 * Prints the order p,q, n, the parameter values and the model performance measures
+	 */
 	public void printResult() {
 		String format1 = "\n%1$-10s-%2$-10s-%3$-10s\n";
 		String format2 = "%1$-10s| %2$-10s\n";
@@ -135,7 +181,15 @@ public class ARMA extends AR {
 	}
 	
 	@Override
-	// Method to forecast the h next steps
+	/**
+	 *  Method to forecast the h next steps
+	 *  Creates forecast values and prints them directly. 
+	 *  The user can decide if he/she  wants to store all observations or only the forecasts.
+	 * @param observations array of Observations
+	 * @param h periods to forecast 
+	 * @param all if true -> return observation + forecasts
+	 * @return forecast  or observations + forecasts
+	 */
 	public Observation[] forecast(Observation[] observations, int h, boolean all) {
 		//init. double array for h fc values
 		Observation[] forecasts = new Observation[h];	

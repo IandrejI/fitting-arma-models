@@ -2,11 +2,26 @@ package heuristik;
 
 import arima.ARMA;
 import timeSeries.Observation;
+/**
+ * The class BruteForce was created, to have a convenient framework for the model evaluation.
+ * By specifying a range for p and q, every possible parameter combination is fitted and evaluated. 
+ * @author Christoph Barkey 
+ * @author Andrej Muschke
+ *
+ */
 
 public class BruteForce {
 
-	// Method to create new brute force for pq-order of arma models. Return best fit
-	// Input: Array of observations, p and q and double value for trainProb (1 = all data used to train model)
+	/**
+	 * Method to create new brute force for pq-order of arma models. Returns and prints best fit.
+	 * If trainProb == 1 -> compareARMATrain()
+	 * If trainProb < 1 -> compareARMATest()
+	 * @param observations array of observations 
+	 * @param p array of p-ranks
+	 * @param q array of q-ranks
+	 * @param trainProb probability of training data [0,1]
+	 * @return bestFit returns best found ARMA-Model
+	 */
 	public static ARMA newARMAForce(Observation[] observations, int[] p, int[] q, double trainProb) {
 		// At the start bestFit = null
 		// If trainProb == 1 use min TrainSSE as best fit criteria
@@ -17,7 +32,14 @@ public class BruteForce {
 		}
 	}
 	
-	// Method Brute Force with train SSE as criteria
+	/**
+	 *  Method Brute Force with train SSE as criteria
+	 * @param observations array of observations 
+	 * @param p array of p-ranks
+	 * @param q array of q-ranks
+	 * @param trainProb probability of training data [0,1]
+	 * @return bestFit returns best found ARMA-Model
+	 */
 	private static ARMA compareARMATrain(Observation[] observations, int[] p, int[] q, double trainProb) {
 		ARMA bestFit = null;
 		for (int i = 0; i < p.length; i++) {
@@ -42,7 +64,14 @@ public class BruteForce {
 		return(bestFit);
 	}
 	
-	// Method Brute Force with test SSE as criteria
+	/**
+	 * Method Brute Force with test SSE as criteria
+	 * @param observations array of observations 
+	 * @param p array of p-ranks
+	 * @param q array of q-ranks
+	 * @param trainProb probability of training data [0,1]
+	 * @return bestFit returns best found ARMA-Model
+	 */
 	private static ARMA compareARMATest(Observation[] observations, int[] p, int[] q, double trainProb) {
 		ARMA bestFit = null;
 		for (int i = 0; i < p.length; i++) {

@@ -1,5 +1,15 @@
 package timeSeries;
 
+/**
+ * The class ‘observation’ provides the data structure for the input data on the lowest granularity. 
+ * That means, each observation is represented by an individual instance of ‘observation’. 
+ * A structural decision worth mentioning is, that each observation knows the p previous values, as well as the q previous errors. 
+ * This structure appears to be convenient for the calculation of the predictions.
+ * @author Christoph Barkey 
+ * @author Andrej Muschke
+ *
+ */
+
 public class Observation {
 	
 	// Fields
@@ -10,7 +20,12 @@ public class Observation {
 	private double[] prevPValues;
 	private double[] prevQErrors;
 	
-	// Constructor
+	/** Constructor
+	 * The constructor for an instance of ‘observation’. 
+	 * It takes the index and value as input values.
+	 * @param index the index of the respective observation
+	 * @param value the actual observation value
+	 */
 	public Observation(int index, double value) {
 		this.index = index;
 		this.value = value;
@@ -30,12 +45,18 @@ public class Observation {
 		return error;
 	}
 	
-	// Calculate error with e_t = x_t - xHat_t
+	/**
+	 * Calculate error with e_t = x_t - xHat_t
+	 * @param error
+	 */
 	public void setError() {
 		this.error = value-prediction;
 	}
 	
-	// Set error with double value
+	/**
+	 *  Set error with double value
+	 * @param error
+	 */
 	public void setError(double error) {
 		this.error = error;
 	}

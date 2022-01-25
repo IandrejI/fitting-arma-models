@@ -1,8 +1,19 @@
 package timeSeries;
+/**
+ * Useful methods to make life more easy.
+ * @author Christoph Barkey 
+ * @author Andrej Muschke
+ *
+ */
 
 public class TimeSeriesUtils {
-
-	// Method to create observation array out of array of doubles
+	
+	/**
+	 * creates an array of observations out of an array of doubles.
+	 * Is used to prepare the input data more conveniently.
+	 * @param values array of doubles (eg. the actual observation value)
+	 * @return array of observations
+	 */
 	public static Observation[] createObsArray(double[] values) {
 		Observation[] observations = new Observation[values.length];
 		for(int i = 0; i<values.length; i++) {

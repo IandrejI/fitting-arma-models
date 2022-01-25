@@ -5,6 +5,13 @@ import arima.ARMA;
 import heuristik.BruteForce;
 import timeSeries.Observation;
 import timeSeries.TimeSeriesUtils;
+/**
+ * In the Test class at first the given sample data is loaded and put into an array of observations. 
+ * Then an AR model and subsequently an ARMA model is created, fitted and the output printed. 
+ * @author Christoph Barkey 
+ * @author Andrej Muschke
+ *
+ */
 
 public class Test {
 
@@ -32,11 +39,11 @@ public class Test {
 		// Fit brute force heuristik with P in [0,5] and Q in [0,5] and forecast 5 periods
 		int[] p = {0,1,2,3,4,5};
 		int[] q = {0,1,2,3,4,5};	
-		ARMA finalModel = BruteForce.newARMAForce(allObservations, p, q, 1);
+		ARMA finalModel = BruteForce.newARMAForce(allObservations, p, q, 0.95);
 		finalModel.printResult();
 		Observation[] forecast = finalModel.forecast(allObservations, 5, false);
 		
-		// Pint values of forecast show difference of true and false in forecast-method 
+		// Pint values of forecast to show difference of true and false in forecast-method 
 		
 		/*
 		for(int i = 0; i < forecast.length; i++) {

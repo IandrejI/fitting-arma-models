@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"arima","l":"AR"},{"p":"arima","l":"ARMA"},{"p":"heuristik","l":"BruteForce"},{"p":"timeSeries","l":"Observation"},{"p":"test","l":"Test"},{"p":"timeSeries","l":"TimeSeriesUtils"}];updateSearchResults();
