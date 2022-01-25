@@ -9,7 +9,7 @@ package timeSeries;
 public class TimeSeriesUtils {
 	
 	/**
-	 * creates an array of observations out of an array of doubles.
+	 * Creates an array of observations out of an array of doubles.
 	 * Is used to prepare the input data more conveniently.
 	 * @param values array of doubles (eg. the actual observation value)
 	 * @return array of observations

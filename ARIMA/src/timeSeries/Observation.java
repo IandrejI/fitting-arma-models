@@ -1,8 +1,8 @@
 package timeSeries;
 
 /**
- * The class ‘observation’ provides the data structure for the input data on the lowest granularity. 
- * That means, each observation is represented by an individual instance of ‘observation’. 
+ * The class Observation provides the data structure for the input data on the lowest granularity. 
+ * That means, each observation is represented by an individual instance of observation. 
  * A structural decision worth mentioning is, that each observation knows the p previous values, as well as the q previous errors. 
  * This structure appears to be convenient for the calculation of the predictions.
  * @author Christoph Barkey 
@@ -20,8 +20,8 @@ public class Observation {
 	private double[] prevPValues;
 	private double[] prevQErrors;
 	
-	/** Constructor
-	 * The constructor for an instance of ‘observation’. 
+	/**
+	 * The constructor for an instance of observation. 
 	 * It takes the index and value as input values.
 	 * @param index the index of the respective observation
 	 * @param value the actual observation value
