@@ -53,7 +53,7 @@ public class AR {
 
 	/**
 	 * Set p previous observation values for every Observation there t>p
-	 * @param observations
+	 * @param observations array of observations
 	 */
 	protected void setPrevPValues(Observation[] observations) {
 		// starting with i = p
@@ -196,7 +196,7 @@ public class AR {
 	 *  Method to forecast the h next steps
 	 *  Creates forecast values and prints them directly. 
 	 *  The user can decide if he/she  wants to store all observations or only the forecasts.
-	 * @param observations array of Observations
+	 * @param observations array of observations
 	 * @param h periods to forecast 
 	 * @param all if true -> return observation + forecasts
 	 * @return forecast  or observations + forecasts
@@ -239,7 +239,7 @@ public class AR {
 	
 	/**
 	 * Helper function, to add an observation to an array of observations and return the new array.
-	 * @param observations array of Observations
+	 * @param observations array of observations
 	 * @param newObservation observation to add
 	 * @return enhanced array of observations
 	 */

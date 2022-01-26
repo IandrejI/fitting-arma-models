@@ -185,7 +185,7 @@ public class ARMA extends AR {
 	 *  Method to forecast the h next steps
 	 *  Creates forecast values and prints them directly. 
 	 *  The user can decide if he/she  wants to store all observations or only the forecasts.
-	 * @param observations array of Observations
+	 * @param observations array of observations
 	 * @param h periods to forecast 
 	 * @param all if true -> return observation + forecasts
 	 * @return forecast  or observations + forecasts
