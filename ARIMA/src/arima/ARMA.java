@@ -132,7 +132,7 @@ public class ARMA extends AR {
 			observations[i].setError();
 		}
 	}
-	
+	// Obsolete if Setting maxPQ in AR 
 
 	
 	@Override
@@ -142,7 +142,7 @@ public class ARMA extends AR {
 	 * @param observation array of observations
 	 * @return predicted value for observation
 	 */
-		protected double predict(Observation observation) {
+	protected double predict(Observation observation) {
 			double pred = intercept;
 			for(int j = 0; j < p; j++) {
 				pred += observation.getPrevPValues()[j]*phiHat[j];
