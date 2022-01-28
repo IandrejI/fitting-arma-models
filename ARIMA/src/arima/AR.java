@@ -126,7 +126,7 @@ public class AR {
 	 * @param observations array of observations
 	 */
 	protected void storePrediction(Observation[] observations) {
-		//wrongfully deleted
+		// wrongfully deleted
 		for(int i = 0; i < p; i++){
 			//setError to 0
 			observations[i].setError(0);

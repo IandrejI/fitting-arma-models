@@ -132,7 +132,7 @@ public class ARMA extends AR {
 			observations[i].setError();
 		}
 	}
-	// Obsolete if Setting maxPQ in AR 
+	// Obsolete if Setting maxPQ in AR!
 
 	
 	@Override
