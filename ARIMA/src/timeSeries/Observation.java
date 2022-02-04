@@ -22,7 +22,7 @@ public class Observation {
 	
 	/**
 	 * The constructor for an instance of observation. 
-	 * It takes the index and value as input values.
+	 * It takes the index and value as input.
 	 * @param index the index of the respective observation
 	 * @param value the actual observation value
 	 */
@@ -46,16 +46,16 @@ public class Observation {
 	}
 	
 	/**
-	 * Calculate error with e_t = x_t - xHat_t
-	 * @param error
+	 * Calculate {@link #error} with e_t = x_t - xHat_t
+	 * {@link #error}
 	 */
 	public void setError() {
 		this.error = value-prediction;
 	}
 	
 	/**
-	 *  Set error with double value
-	 * @param error
+	 * Set {@link #error} with double value
+	 * {@link #error}
 	 */
 	public void setError(double error) {
 		this.error = error;

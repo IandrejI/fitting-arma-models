@@ -4,7 +4,7 @@ package arima;
 import timeSeries.Observation;
 
 /**
- * Class to solve an ARMA-Model using a linear regression.
+ * Class to solve an ARMA Model using a linear regression.
  * First solving the AR part of the model and subsequently solving the MA part,
  * both with an OLS regression, minimizing the sum of squared errors.
  * By solving the AR part, we obtain the p parameter values and with these we can calculate 
@@ -19,10 +19,9 @@ public class ARMA extends AR {
 	// Fields
 	private int q;
 	private double[] thetaHat;
-	private int maxPQ;
 	
 	/**
-	 * Constructor for an ARMA-Model. Only uses p and q as input.
+	 * Constructor for an ARMA Model. Only uses p and q as input.
 	 * @param p order p for AR polynomial
 	 * @param q order q for MA polynomial
 	 */
@@ -34,14 +33,14 @@ public class ARMA extends AR {
 	@Override
 	/**
 	 * Wrapper function that includes data preparation steps, parameter estimations and evaluation.
-	 * Invokes a new AR-Model at the beginning to set errors.
+	 * Invokes a new AR Model {@link AR#fitModel(Observation[], double)} at the beginning to set errors.
 	 * @param observations array of observations
 	 * @param probTrain probability of training data [0,1]
 	 */ 
 	public void fitModel(Observation[] observations, double probTrain){
 		AR ar = new AR(p);
 		ar.fitModel(observations, probTrain);
-		nTrain = (int) Math.round(probTrain*observations.length);
+		this.nTrain = (int) Math.round(probTrain*observations.length);
 		setMaxPQ();
 		setPrevQErrors(observations);
 		createOLSData(observations);
@@ -52,10 +51,11 @@ public class ARMA extends AR {
 		calcSSE(observations);
 	}
 	
+	@Override
 	/**
-	 * Method to store the max(p,q) value
+	 * Override to store the max(p,q) value in {@link AR#maxPQ}
 	 */
-	private void setMaxPQ() {
+	protected void setMaxPQ() {
 		if (p > q) {
 			maxPQ = p;
 		} else {
@@ -64,7 +64,7 @@ public class ARMA extends AR {
 	}
 	
 	/**
-	 * Method to allocate the previous q errors to all observations
+	 * Method to allocate the previous q errors to all observations {@link timeSeries.Observation#setPrevQErrors(double[])}
 	 * @param observations array of observations
 	 */
 	public void setPrevQErrors(Observation[] observations) {
@@ -76,12 +76,22 @@ public class ARMA extends AR {
 			}
 		}
 	}
+	
+	@Override
+	/**
+	 * Wrapper function to reduce code redundancy
+	 * Added {@link #setPrevQErrors(Observation[])}
+	 */
+	protected void setPrevPQ(Observation[] observations){
+		setPrevPValues(observations);
+		setPrevQErrors(observations);
+	}
 
 
 	
 	@Override
 	/**
-	 *  Method to create OLSData-array. Considering prevPValues and prevQErrors.
+	 *  Method to create OLSData array {@link AR#data} Considering {@link timeSeries.Observation#getPrevPValues()} and {@link timeSeries.Observation#getPrevQErrors()}.
 	 *  Format: (y_1, x_11, x_12, ... ,x_1p, y_n, x_n1, x_n2,...,x_np)
 	 * @param observations array of observations
 	 */
@@ -106,7 +116,7 @@ public class ARMA extends AR {
 	}
 	
 	/**
-	 * Method to stores the MA parameters into the field thetaHat
+	 * Method to stores the MA parameters into the field {@link #thetaHat}
 	 */
 	private void storeThetaHat() {
 		thetaHat = new double[q];
@@ -117,28 +127,8 @@ public class ARMA extends AR {
 	
 	@Override
 	/**
-	 * Creates actual predictions and stores them into the respective field prediction. 
-	 * Then setError is invoked, calculating, and storing the results in error
-	 * Considering maxPQ as boundaries and set error to 0 for i < maxPQ
-	 * @param observations array of observations
-	 */
-	protected void storePrediction(Observation[] observations) {
-		for(int i = 0; i < maxPQ; i++){
-			observations[i].setError(0);
-		}
-		for(int i = maxPQ; i <observations.length; i++){
-			double pred = predict(observations[i]);
-			observations[i].setPrediction(pred);
-			observations[i].setError();
-		}
-	}
-	// Obsolete if Setting maxPQ in AR!
-
-	
-	@Override
-	/**
-	 * Separate predict function, to calculate predicted value based on prevPValues and PsiHat
-	 and prevQErrors and thetaHat.
+	 * Separate predict function, to calculate predicted value based on {@link timeSeries.Observation#getPrevPValues()} and {@link #phiHat} and
+	 * {@link timeSeries.Observation#getPrevQErrors()} and {@link #thetaHat}
 	 * @param observation array of observations
 	 * @return predicted value for observation
 	 */
@@ -158,7 +148,8 @@ public class ARMA extends AR {
 	@Override
 	/**
 	 * Method to print the relevant data of an ARMA model. 
-	 * Prints the order p,q, n, the parameter values and the model performance measures
+	 * Prints the order {@link #p},@ {@link ARMA#q},link #nTrain} the parameter values {@link #phiHat}, {@link #thetaHat} and the model performance measures
+	 * {@link #trainSSE}, {@link #testSSE}, {@link #trainMSE} and {@link #testMSE}	 
 	 */
 	public void printResult() {
 		String format1 = "\n%1$-10s-%2$-10s-%3$-10s\n";
@@ -180,49 +171,7 @@ public class ARMA extends AR {
 		}
 	}
 	
-	@Override
-	/**
-	 *  Method to forecast the h next steps
-	 *  Creates forecast values and prints them directly. 
-	 *  The user can decide if he/she  wants to store all observations or only the forecasts.
-	 * @param observations array of observations
-	 * @param h periods to forecast 
-	 * @param all if true -> return observation + forecasts
-	 * @return forecast  or observations + forecasts
-	 */
-	public Observation[] forecast(Observation[] observations, int h, boolean all) {
-		//init. double array for h fc values
-		Observation[] forecasts = new Observation[h];	
-		//iterate h times 
-		for(int i = 0; i < h; i++) {	
-			//create new observation with value 0
-			Observation ob = new Observation(observations.length+1, 0);
-			//add new observation to LOCAL observation array only
-			observations = addObservation(observations, ob);
-			//set prev p values for all observations
-			setPrevPValues(observations);
-			//setPrevQErrors(observations);
-			setPrevQErrors(observations);
-			//estimate forecast value by predicting the value for the new observation
-			double fct = predict(observations[observations.length - 1]);
-			//set the resulting forecast value as value of the the observation
-			observations[observations.length - 1].setValue(fct);
-			//store result in fc array
-			forecasts[i] = observations[observations.length - 1];
-		}
-		String format = "%1$-10s| %2$-10s| %3$-10s\n";	
-		System.out.print("\n");
-		System.out.format(format, "Forecast","Index","Prediction");
-		for(int i = 0; i<forecasts.length; i++) {
-			System.out.format(format, "h"+(i+1),forecasts[i].getIndex(),forecasts[i].getValue());
-		}
-		//set fc value array as field forecast
-		if(all) {
-			return observations;
-		} else {
-			return(forecasts);
-		}
-	}
+	
 	
 	
 	// Getters

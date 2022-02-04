@@ -14,11 +14,11 @@ public class BruteForce {
 
 	/**
 	 * Method to create new brute force for pq-order of arma models. Returns and prints best fit.
-	 * If trainProb == 1 -> compareARMATrain()
-	 * If trainProb < 1 -> compareARMATest()
+	 * If trainProb == 1 compareARMATrain()
+	 * If trainProb != 1 compareARMATest()
 	 * @param observations array of observations 
-	 * @param p array of p-ranks
-	 * @param q array of q-ranks
+	 * @param p array of p ranks
+	 * @param q array of q ranks
 	 * @param trainProb probability of training data [0,1]
 	 * @return bestFit returns best found ARMA-Model
 	 */
@@ -35,10 +35,10 @@ public class BruteForce {
 	/**
 	 *  Method Brute Force with train SSE as criteria
 	 * @param observations array of observations 
-	 * @param p array of p-ranks
-	 * @param q array of q-ranks
+	 * @param p array of p ranks
+	 * @param q array of q ranks
 	 * @param trainProb probability of training data [0,1]
-	 * @return bestFit returns best found ARMA-Model
+	 * @return bestFit returns best found ARMA Model
 	 */
 	private static ARMA compareARMATrain(Observation[] observations, int[] p, int[] q, double trainProb) {
 		ARMA bestFit = null;
@@ -67,10 +67,10 @@ public class BruteForce {
 	/**
 	 * Method Brute Force with test SSE as criteria
 	 * @param observations array of observations 
-	 * @param p array of p-ranks
-	 * @param q array of q-ranks
+	 * @param p array of p ranks
+	 * @param q array of q ranks
 	 * @param trainProb probability of training data [0,1]
-	 * @return bestFit returns best found ARMA-Model
+	 * @return bestFit returns best found ARMA Model
 	 */
 	private static ARMA compareARMATest(Observation[] observations, int[] p, int[] q, double trainProb) {
 		ARMA bestFit = null;

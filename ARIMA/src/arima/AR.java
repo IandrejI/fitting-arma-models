@@ -17,6 +17,7 @@ public class AR {
 	
 	// Fields
 	protected int p;
+	protected int maxPQ;
 	protected double[] data;
 	protected int nTrain;
 	protected double[] estPara;
@@ -28,7 +29,7 @@ public class AR {
 	protected double testMSE;
 	
 	/**
-	 * Constructor for an AR-Model. Only uses p as input.
+	 * Constructor for an AR Model. Only uses p as input.
 	 * @param p order p for AR polynomial
 	 */
 	public AR(int p) {
@@ -42,6 +43,7 @@ public class AR {
 	 */
 	public void fitModel(Observation[] observations, double probTrain) {
 		this.nTrain = (int) Math.round(probTrain*observations.length);
+		setMaxPQ();
 		setPrevPValues(observations);
 		createOLSData(observations);
 		estPara(nTrain-p,p);
@@ -49,10 +51,15 @@ public class AR {
 		storePrediction(observations);
 		calcSSE(observations);
 	}
-	
+	/**
+	 * Set p for {@link #maxPQ} to reduce code redundancy
+	 */
+	protected void setMaxPQ(){
+		maxPQ = p;
+	}
 
 	/**
-	 * Set p previous observation values for every Observation there t>p
+	 * {@link timeSeries.Observation#setPrevPValues(double[])} values for every Observation there t>p
 	 * @param observations array of observations
 	 */
 	protected void setPrevPValues(Observation[] observations) {
@@ -68,10 +75,17 @@ public class AR {
 		}
 	}
 	
+	/**
+	 * Wrapper function to reduce code redundancy.
+	 * Calls {@link #setPrevPValues(Observation[])}
+	 */
+	protected void setPrevPQ(Observation[] observations){
+		setPrevPValues(observations);
+	}
 
 
 	/**
-	 *  Method to create OLSData-array. Considering prevPValues.
+	 *  Method to create {@link #data} Considering {@link timeSeries.Observation#getPrevPValues()}
 	 *  Format: (y_1, x_11, x_12, ... ,x_1p, y_n, x_n1, x_n2,...,x_np)
 	 * @param observations array of observations
 	 */
@@ -94,7 +108,7 @@ public class AR {
 	}
 	
 	/**
-	 * Takes the previously created input data from data, estimates the regression parameters, and stores them into estPara
+	 * Takes the previously created input {@link #data}, estimates the regression parameters, and stores them into {@link #estPara}
 	 * @param numObs number of observations
 	 * @param numPara number of parameters
 	 */
@@ -110,7 +124,7 @@ public class AR {
 	}
 	
 	/**
-	 * Stores the intercept and AR parameters separately into the respective fields intercept and phiHat 
+	 * Stores the intercept and AR parameters separately into the respective fields {@link #intercept} and {@link #phiHat} 
 	 */
 	protected void storePhiHat(){
 		phiHat = new double[p];
@@ -121,19 +135,15 @@ public class AR {
 	}
 	
 	/**
-	 * Creates actual predictions and stores them into the respective field prediction. 
-	 * Then setError is invoked, calculating, and storing the results in error
+	 * Creates actual predictions and stores them into the respective field {@link timeSeries.Observation#setPrediction(double)} 
+	 * Then {@link timeSeries.Observation#setError()} is invoked, calculating, and storing the results in error
 	 * @param observations array of observations
 	 */
 	protected void storePrediction(Observation[] observations) {
-		// wrongfully deleted
-		for(int i = 0; i < p; i++){
-			//setError to 0
+		for(int i = 0; i < maxPQ; i++){
 			observations[i].setError(0);
 		}
-		
-		for(int i = p; i < observations.length; i++){
-			//invoke predict method
+		for(int i = maxPQ; i <observations.length; i++){
 			double pred = predict(observations[i]);
 			observations[i].setPrediction(pred);
 			observations[i].setError();
@@ -141,7 +151,7 @@ public class AR {
 	}
 	
 	/**
-	 * Separate predict function, to calculate predicted value based on prevPValues and PsiHat
+	 * Separate predict function, to calculate predicted value based on {@link timeSeries.Observation#getPrevPValues()} and {@link #phiHat}
 	 * @param observation array of observations
 	 * @return predicted value for observation
 	 */
@@ -155,7 +165,7 @@ public class AR {
 
 	/**
 	 * Method to calculate the error measurements.
-	 * train/test SSE/MSE
+	 * {@link #trainSSE}, {@link #testSSE}, {@link #trainMSE} and {@link #testMSE}
 	 * @param observations array of observations
 	 */
 	protected void calcSSE(Observation[] observations) {
@@ -178,7 +188,8 @@ public class AR {
 	
 	/**
 	 * Method to print the relevant data of an AR model. 
-	 * Prints the order p, n, the parameter values and the model performance measures
+	 * Prints the order {@link #p}, {@link #nTrain} the parameter values {@link #phiHat} and the model performance measures
+	 * {@link #trainSSE}, {@link #testSSE}, {@link #trainMSE} and {@link #testMSE}
 	 */
 	public void printResult() {
 		String format1 = "\n%1$-10s-%2$-10s-%3$-10s\n";
@@ -204,7 +215,7 @@ public class AR {
 	 *  The user can decide if he/she  wants to store all observations or only the forecasts.
 	 * @param observations array of observations
 	 * @param h periods to forecast 
-	 * @param all if true -> return observation + forecasts
+	 * @param all if true return observation + forecasts
 	 * @return forecast  or observations + forecasts
 	 */
 		public Observation[] forecast(Observation[] observations, int h, boolean all) {
@@ -217,7 +228,7 @@ public class AR {
 				//add new observation to LOCAL observation array only
 				observations = addObservation(observations, ob);
 				//set prev p values for all observations
-				setPrevPValues(observations);
+				setPrevPQ(observations);
 				//estimate forecast value by predicting the value for the new observation
 				double fct = predict(observations[observations.length - 1]);
 				//set the resulting forecast value as value of the the observation
